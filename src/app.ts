@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", authRoute);
-app.use("/article", articleRoute);
+app.use("/articles", articleRoute);
 
 app.use(errorMiddleware);
 

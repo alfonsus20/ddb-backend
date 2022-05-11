@@ -10,10 +10,7 @@ import {
 import sequelize from "../config/db";
 import Article from "./article.model";
 
-export class User extends Model<
-  InferAttributes<User>,
-  InferCreationAttributes<User>
-> {
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare email: string;
@@ -97,5 +94,7 @@ User.hasMany(Article, {
   foreignKey: "userId",
   as: "articles",
 });
+
+Article.belongsTo(User, { as: "user", foreignKey: "userId" });
 
 export default User;

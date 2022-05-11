@@ -9,7 +9,7 @@ import {
 import sequelize from "../config/db";
 import User from "./user.model";
 
-export class Article extends Model<
+class Article extends Model<
   InferAttributes<Article>,
   InferCreationAttributes<Article>
 > {
