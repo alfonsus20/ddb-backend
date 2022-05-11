@@ -7,7 +7,7 @@ import {
   Model,
 } from "sequelize";
 import sequelize from "../config/db";
-import User from "./user";
+import User from "./user.model";
 
 export class Article extends Model<
   InferAttributes<Article>,

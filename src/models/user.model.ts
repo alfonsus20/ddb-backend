@@ -8,7 +8,7 @@ import {
   Model,
 } from "sequelize";
 import sequelize from "../config/db";
-import Article from "./article";
+import Article from "./article.model";
 
 export class User extends Model<
   InferAttributes<User>,
@@ -80,8 +80,18 @@ User.init(
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   },
-  { sequelize, tableName: "users" }
+  {
+    sequelize,
+    tableName: "users",
+    defaultScope: { attributes: { exclude: ["password"] } },
+  }
 );
+
+User.prototype.toJSON = function () {
+  const attributes = { ...this.get() } as Partial<User>;
+  delete attributes["password"];
+  return attributes;
+};
 
 User.hasMany(Article, {
   sourceKey: "id",
