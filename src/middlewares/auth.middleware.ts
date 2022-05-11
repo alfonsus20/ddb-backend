@@ -10,32 +10,36 @@ export const authMiddleware = async (
   _: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.get("Authorization");
-
-  let token = "";
-
-  if (!authHeader) {
-    next(new HttpException(401, "Not authenticated"));
-  } else {
-    token = authHeader.split(" ")[1];
-  }
-
-  if (!token) {
-    next(new HttpException(401, "Token not found"));
-  }
-
   try {
-    const { userId } = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    const user = await User.findOne({ where: { id: userId } });
+    const authHeader = req.get("Authorization");
 
-    if (user) {
-      req.user = user;
-      next();
+    let token = "";
+
+    if (!authHeader) {
+      throw new HttpException(401, "Not authenticated");
     } else {
-      next(new HttpException(404, "User not found"));
+      token = authHeader.split(" ")[1];
+    }
+
+    if (!token) {
+      throw new HttpException(401, "Token not found");
+    }
+
+    try {
+      const { userId } = jwt.verify(token, JWT_SECRET) as TokenPayload;
+      const user = await User.findOne({ where: { id: userId } });
+
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        throw new HttpException(404, "User not found");
+      }
+    } catch (err) {
+      throw new HttpException(401, "Token invalid");
     }
   } catch (err) {
-    next(new HttpException(401, "Token invalid"));
+    next(err);
   }
 };
 
