@@ -3,6 +3,7 @@ import { PORT } from "./config";
 import cors from "cors";
 import { connectDatabase } from "./utils/db";
 import authRoute from "./routes/auth.route";
+import articleRoute from "./routes/article.route";
 import errorMiddleware from "./middlewares/error.middleware";
 
 const app = express();
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", authRoute);
+app.use("/article", articleRoute);
 
 app.use(errorMiddleware);
 

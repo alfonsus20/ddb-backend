@@ -1,15 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { HttpException } from "../exceptions/HttpException";
 import User from "../models/user.model";
 import { RegisterRequest } from "../interfaces/auth.interface";
 import bcryptjs from "bcryptjs";
 
-export const register = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const register = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
 
@@ -34,6 +30,6 @@ export const register = async (
 
     res.json({ message: "User berhasil terdaftar", data: newUser });
   } catch (err) {
-    next(err);
+    throw new HttpException(500, "Server error");
   }
 };

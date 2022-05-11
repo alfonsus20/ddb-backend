@@ -7,6 +7,5 @@ export default (
   res: Response,
   next: NextFunction
 ) => {
-  const statusCode = error.status || 500;
-  res.status(statusCode).json({ message: error.message, data: error.data });
+  res.status(error.status).json({ message: error.message, data: error.data });
 };

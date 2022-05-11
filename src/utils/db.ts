@@ -1,4 +1,5 @@
 import sequelize from "../config/db";
+import { HttpException } from "../exceptions/HttpException";
 
 export const connectDatabase = async () => {
   try {
@@ -6,6 +7,6 @@ export const connectDatabase = async () => {
     await sequelize.sync();
     console.log("Successfully connected to DB");
   } catch (e) {
-    console.log(e);
+    throw new HttpException(500, "Database error");
   }
 };
