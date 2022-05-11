@@ -6,12 +6,13 @@ import authRoute from "./routes/auth.route";
 import articleRoute from "./routes/article.route";
 import userRoute from "./routes/user.route";
 import errorMiddleware from "./middlewares/error.middleware";
+import fileUpload from "express-fileupload";
 
 const app = express();
 
 app.use(express.json());
-
 app.use(cors());
+app.use(fileUpload());
 
 connectDatabase();
 

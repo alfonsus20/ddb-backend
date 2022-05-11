@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import fileUpload from "express-fileupload";
 import { validationResult } from "express-validator";
+import storage from "../config/storage";
 import { HttpException } from "../exceptions/HttpException";
 import { ArticlePayload } from "../interfaces/article.interface";
 import { CommonQuery } from "../interfaces/index.interface";
@@ -137,6 +139,38 @@ export const deleteArticle = async (
 
     await foundArticle.destroy();
     res.json({ message: "Artikel berhasil dihapus", data: null });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadArticleImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { files } = req;
+
+  try {
+    if (!files) {
+      throw new HttpException(400, "Tidak ada gambar");
+    } else {
+      try {
+        const { image } = files as { image: fileUpload.UploadedFile };
+
+        const filePath = `users/${image.name}`;
+
+        await storage.from("images").upload(filePath, image.data, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: image.mimetype,
+        });
+
+        res.json({ message: "File berhasil diupload", data: null });
+      } catch (err) {
+        throw new HttpException(500, "Failed to upload");
+      }
+    }
   } catch (err) {
     next(err);
   }

@@ -7,6 +7,7 @@ import {
   getAllArticleFilteredAndPaginated,
   getArticleById,
   updateArticle,
+  uploadArticleImage,
 } from "../controllers/article.controller";
 import {
   adminMiddleware,
@@ -55,6 +56,11 @@ route.put(
     body("imageURL").notEmpty().isString(),
   ],
   updateArticle
+);
+
+route.post(
+  "/imageUpload",
+  uploadArticleImage
 );
 
 route.delete("/:id", authMiddleware, adminMiddleware, deleteArticle);
