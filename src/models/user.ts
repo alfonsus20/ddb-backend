@@ -7,7 +7,7 @@ import {
 } from "sequelize";
 import sequelize from "../config/db";
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare email: string;

@@ -2,7 +2,7 @@ import express from "express";
 import { PORT } from "./config";
 import cors from "cors";
 import { connectDatabase } from "./utils/db";
-import User from "./models/user.model";
+import User from "./models/user";
 
 const app = express();
 
@@ -13,20 +13,19 @@ app.use(cors());
 connectDatabase();
 
 app.get("/", (req, res) => {
+  req.user.name;
   res.json({ message: "Hai" });
 });
 
 app.post("/halo", async (req, res) => {
   try {
     const newUser = await User.create({
-      name: "Alfons",
+      name: "William",
       email: "alfonschandrawan@gmail.com",
       password: "123",
       entryYear: 2019,
       majority: "Informatika",
-      isAdmin: true,
     });
-    console.log(newUser);
     res.json({ message: "mantap" });
   } catch (e) {
     console.log(e);
