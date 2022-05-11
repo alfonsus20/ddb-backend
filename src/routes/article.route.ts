@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { body } from "express-validator";
 import { createArticle } from "../controllers/article.controller";
 import {
   adminMiddleware,
@@ -7,6 +8,12 @@ import {
 
 const route = Router();
 
-route.post("/", authMiddleware, adminMiddleware, createArticle);
+route.post(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  [body("title").notEmpty().isString(), body("content").notEmpty().isString()],
+  createArticle
+);
 
 export default route;

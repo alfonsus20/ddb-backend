@@ -3,31 +3,39 @@ import { HttpException } from "../exceptions/HttpException";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { TokenPayload } from "../interfaces/token.interface";
+import User from "../models/user.model";
 
 export const authMiddleware = async (
   req: Request,
-  res: Response,
+  _: Response,
   next: NextFunction
 ) => {
   const authHeader = req.get("Authorization");
 
+  let token = "";
+
   if (!authHeader) {
-    throw new HttpException(401, "Not authenticated");
+    next(new HttpException(401, "Not authenticated"));
+  } else {
+    token = authHeader.split(" ")[1];
   }
 
-  const token = authHeader.split(" ")[1];
-
   if (!token) {
-    throw new HttpException(401, "Token not found");
+    next(new HttpException(401, "Token not found"));
   }
 
   try {
-    const { user } = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    req.user = user;
-    next();
+    const { userId } = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const user = await User.findOne({ where: { id: userId } });
+
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      next(new HttpException(404, "User not found"));
+    }
   } catch (err) {
-    res.status(400);
-    throw new Error("Token invalid");
+    next(new HttpException(401, "Token invalid"));
   }
 };
 
@@ -39,6 +47,6 @@ export const adminMiddleware = async (
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    throw new HttpException(403, "Not authorized as admin");
+    next(new HttpException(403, "Not authorized as admin"));
   }
 };

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { register } from "../controllers/auth.controller";
+import { login, register } from "../controllers/auth.controller";
 
 const route = Router();
 
@@ -18,6 +18,15 @@ route.post(
     body("entryYear").notEmpty().isNumeric(),
   ],
   register
+);
+
+route.post(
+  "/login",
+  [
+    body("email").notEmpty().isEmail().withMessage("Email tidak valid"),
+    body("password").notEmpty().isString(),
+  ],
+  login
 );
 
 export default route;
