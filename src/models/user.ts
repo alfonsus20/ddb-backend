@@ -1,13 +1,19 @@
 import {
+  Association,
   CreationOptional,
   DataTypes,
+  HasManyCreateAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
 } from "sequelize";
 import sequelize from "../config/db";
+import Article from "./article";
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+export class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
+> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare email: string;
@@ -22,6 +28,12 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  declare createArticle: HasManyCreateAssociationMixin<Article, "userId">;
+
+  declare static associations: {
+    articles: Association<User, Article>;
+  };
 }
 
 User.init(
@@ -70,5 +82,11 @@ User.init(
   },
   { sequelize, tableName: "users" }
 );
+
+User.hasMany(Article, {
+  sourceKey: "id",
+  foreignKey: "userId",
+  as: "articles",
+});
 
 export default User;

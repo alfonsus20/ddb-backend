@@ -20,13 +20,17 @@ app.get("/", (req, res) => {
 app.post("/halo", async (req, res) => {
   try {
     const newUser = await User.create({
-      name: "William",
-      email: "alfonschandrawan@gmail.com",
-      password: "123",
-      entryYear: 2019,
+      name: "James",
+      email: "james@gmail.com",
+      password: "password",
+      entryYear: 2020,
       majority: "Informatika",
     });
-    res.json({ message: "mantap" });
+    const article = await newUser.createArticle({
+      title: "Halo DDB",
+      content: "test",
+    });
+    res.json({ message: "mantap", user: newUser, article });
   } catch (e) {
     console.log(e);
   }
