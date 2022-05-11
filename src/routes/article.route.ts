@@ -25,7 +25,11 @@ route.post(
   "/",
   authMiddleware,
   adminMiddleware,
-  [body("title").notEmpty().isString(), body("content").notEmpty().isString()],
+  [
+    body("title").notEmpty().isString(),
+    body("content").notEmpty().isString(),
+    body("imageURL").notEmpty().isString(),
+  ],
   createArticle
 );
 
@@ -33,7 +37,11 @@ route.post(
   "/",
   authMiddleware,
   adminMiddleware,
-  [body("title").notEmpty().isString(), body("content").notEmpty().isString()],
+  [
+    body("title").notEmpty().isString(),
+    body("content").notEmpty().isString(),
+    body("imageURL").notEmpty().isString(),
+  ],
   createArticle
 );
 
@@ -41,7 +49,11 @@ route.put(
   "/:id",
   authMiddleware,
   adminMiddleware,
-  [body("title").notEmpty().isString(), body("content").notEmpty().isString()],
+  [
+    body("title").notEmpty().isString(),
+    body("content").notEmpty().isString(),
+    body("imageURL").notEmpty().isString(),
+  ],
   updateArticle
 );
 
