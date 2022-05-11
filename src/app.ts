@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDatabase } from "./utils/db";
 import authRoute from "./routes/auth.route";
 import articleRoute from "./routes/article.route";
+import userRoute from "./routes/user.route";
 import errorMiddleware from "./middlewares/error.middleware";
 
 const app = express();
@@ -15,12 +16,12 @@ app.use(cors());
 connectDatabase();
 
 app.get("/", (req, res) => {
-  req.user.name;
   res.json({ message: "Hai" });
 });
 
 app.use("/", authRoute);
 app.use("/articles", articleRoute);
+app.use("/users", userRoute);
 
 app.use(errorMiddleware);
 

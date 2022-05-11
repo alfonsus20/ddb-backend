@@ -12,7 +12,7 @@ export const getAllArticleFilteredAndPaginated = async (
   next: NextFunction
 ) => {
   const { page = 0, rowsPerPage = 10, sortDirection = "DESC" } = req.query;
-  
+
   try {
     const articles = await Article.findAll({
       include: [{ model: User, as: "user", attributes: ["name"] }],
