@@ -2,15 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/*",
-      "use": "@vercel/node@canary"
+      "src": "dist/*",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/app.ts",
-      "headers": {
+      "dest": "dist/app.js",
+      "headers": { 
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
