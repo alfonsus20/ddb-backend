@@ -58,10 +58,7 @@ route.put(
   updateArticle
 );
 
-route.post(
-  "/imageUpload",
-  uploadArticleImage
-);
+route.post("/imageUpload", authMiddleware, adminMiddleware, uploadArticleImage);
 
 route.delete("/:id", authMiddleware, adminMiddleware, deleteArticle);
 

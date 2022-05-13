@@ -6,6 +6,7 @@ import {
   getAllUsersFilteredAndPaginated,
   getUserById,
   makeUserAdmin,
+  makeUserVerified,
   updateUser,
 } from "../controllers/user.controller";
 import {
@@ -19,6 +20,7 @@ route.get("/", getAllUsersFilteredAndPaginated);
 route.get("/findAll", getAllUsers);
 route.get("/:id", getUserById);
 route.get("/:id/makeAdmin", authMiddleware, adminMiddleware, makeUserAdmin);
+route.get("/:id/verify", authMiddleware, adminMiddleware, makeUserVerified);
 route.put(
   "/:id",
   authMiddleware,

@@ -83,12 +83,13 @@ export const updateUser = async (
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      console.log(errors.mapped());
       throw new HttpException(400, "Body tidak valid", errors.array());
     }
 
     const payload = req.body as UserPayload;
+
     delete payload.isAdmin;
+    delete payload.isVerified;
 
     const foundUser = await User.findOne({
       where: { id: req.params.id },
@@ -125,6 +126,27 @@ export const makeUserAdmin = async (
 
     await foundUser.update({ isAdmin: true });
     res.json({ message: "User berhasil dijadikan admin", data: null });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const makeUserVerified = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const foundUser = await User.findOne({
+      where: { id: req.params.id },
+    });
+
+    if (!foundUser) {
+      throw new HttpException(404, "User tidak ditemukan");
+    }
+
+    await foundUser.update({ isVerified: true });
+    res.json({ message: "User berhasil diverifikasi", data: null });
   } catch (err) {
     next(err);
   }

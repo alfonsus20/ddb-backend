@@ -19,7 +19,8 @@ export const register = async (
       throw new HttpException(400, "Konten tidak valid", errors.array());
     }
 
-    const { email, password, ...rest } = req.body as RegisterRequest;
+    const { email, password, name, majority, entryYear } =
+      req.body as RegisterRequest;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -29,9 +30,11 @@ export const register = async (
     const hashedPassword = await bcryptjs.hash(password, 12);
 
     const newUser = await User.create({
+      name,
       email,
       password: hashedPassword,
-      ...rest,
+      majority,
+      entryYear,
     });
 
     res.json({ message: "User berhasil terdaftar", data: newUser });
