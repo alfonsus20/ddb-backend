@@ -2,8 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist/app.js",
-      "use": "@vercel/node"
+      "src": "src/*",
+      "use": "@vercel/node@canary"
     }
   ],
   "routes": [
