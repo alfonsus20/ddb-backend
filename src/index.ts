@@ -7,6 +7,7 @@ import articleRoute from "./routes/article.route";
 import userRoute from "./routes/user.route";
 import errorMiddleware from "./middlewares/error.middleware";
 import fileUpload from "express-fileupload";
+import serverless from "serverless-http";
 
 const app = express();
 
@@ -29,3 +30,5 @@ app.use(errorMiddleware);
 app.listen(PORT || 3000, () => {
   console.log(`Server started on port ${PORT || 3000}`);
 });
+
+export default { handler: serverless(app) };
