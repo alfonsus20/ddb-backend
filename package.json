@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
+  "private": true,
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc -p ."
+    "build": "tsc",
+    "start": "vercel dev",
+    "deploy": "vercel deploy"
   },
   "keywords": [],
   "author": "",
