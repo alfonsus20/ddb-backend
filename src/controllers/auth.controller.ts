@@ -79,3 +79,26 @@ export const login = async (
     next(err);
   }
 };
+
+export const getAuthenticatedUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const foundUser = await User.findOne({
+      where: { id: req.user.id },
+    });
+
+    if (!foundUser) {
+      throw new HttpException(404, "User tidak ditemukan");
+    }
+
+    res.json({
+      message: "Profil berhasil didapatkan berdasarkan id",
+      data: foundUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
