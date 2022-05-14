@@ -4,6 +4,9 @@ import { HttpException } from "../exceptions/HttpException";
 import { UserPayload, UserQuery } from "../interfaces/user.interface";
 import User from "../models/user.model";
 import { Op } from "sequelize";
+import fileUpload from "express-fileupload";
+import storage from "../config/storage";
+import { IMAGE_URL_PREFIX } from "../utils/constants";
 
 export const getAllUsersFilteredAndPaginated = async (
   req: Request<{}, {}, {}, UserQuery>,
@@ -104,6 +107,42 @@ export const updateUser = async (
       res.json({ message: "User berhasil diupdate", data: foundUser });
     } else {
       throw new HttpException(403, "Forbidden");
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadProfileImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { files } = req;
+
+  try {
+    if (!files) {
+      throw new HttpException(400, "Tidak ada gambar");
+    } else {
+      try {
+        const { image } = files as { image: fileUpload.UploadedFile };
+
+        const filePath = `users/${image.name}`;
+
+        await storage.from("images").upload(filePath, image.data, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: image.mimetype,
+        });
+
+        res.json({
+          message: "File berhasil diupload",
+          data: `${IMAGE_URL_PREFIX}/${filePath}`,
+        });
+      } catch (err) {
+        console.log(err);
+        throw new HttpException(500, "Failed to upload");
+      }
     }
   } catch (err) {
     next(err);

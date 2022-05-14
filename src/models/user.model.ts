@@ -20,6 +20,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare graduationYear?: number;
   declare thesisURL?: string;
   declare profileImageURL?: string;
+  declare isGraduated?: boolean;
   declare isAdmin?: boolean;
   declare isVerified?: boolean;
 
@@ -73,6 +74,7 @@ User.init(
       allowNull: true,
     },
     isAdmin: { type: DataTypes.BOOLEAN, defaultValue: false },
+    isGraduated: { type: DataTypes.BOOLEAN, defaultValue: false },
     isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

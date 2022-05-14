@@ -7,6 +7,7 @@ import { ArticlePayload } from "../interfaces/article.interface";
 import { CommonQuery } from "../interfaces/index.interface";
 import Article from "../models/article.model";
 import User from "../models/user.model";
+import { IMAGE_URL_PREFIX } from "../utils/constants";
 
 export const getAllArticleFilteredAndPaginated = async (
   req: Request<{}, {}, {}, CommonQuery>,
@@ -166,7 +167,10 @@ export const uploadArticleImage = async (
           contentType: image.mimetype,
         });
 
-        res.json({ message: "File berhasil diupload", data: null });
+        res.json({
+          message: "File berhasil diupload",
+          data: `${IMAGE_URL_PREFIX}/${filePath}`,
+        });
       } catch (err) {
         throw new HttpException(500, "Failed to upload");
       }

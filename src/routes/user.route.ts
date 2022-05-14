@@ -7,6 +7,7 @@ import {
   getUserById,
   makeUserAdmin,
   makeUserVerified,
+  uploadProfileImage,
   updateUser,
 } from "../controllers/user.controller";
 import {
@@ -21,6 +22,10 @@ route.get("/findAll", getAllUsers);
 route.get("/:id", getUserById);
 route.get("/:id/makeAdmin", authMiddleware, adminMiddleware, makeUserAdmin);
 route.get("/:id/verify", authMiddleware, adminMiddleware, makeUserVerified);
+route.post(
+  "/profileImageUpload",
+  uploadProfileImage
+);
 route.put(
   "/:id",
   authMiddleware,
