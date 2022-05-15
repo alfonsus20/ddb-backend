@@ -8,6 +8,7 @@ import { CommonQuery } from "../interfaces/index.interface";
 import Article from "../models/article.model";
 import User from "../models/user.model";
 import { IMAGE_URL_PREFIX } from "../utils/constants";
+import { encodeImageToBlurhash } from "../utils/helpers";
 
 export const getAllArticleFilteredAndPaginated = async (
   req: Request<{}, {}, {}, CommonQuery>,
@@ -88,6 +89,7 @@ export const createArticle = async (
     }
 
     const payload = req.body as ArticlePayload;
+    payload.blurHash = await encodeImageToBlurhash(payload.imageURL) as string;
     const newArticle = await req.user.createArticle(payload);
 
     res.json({ message: "Artikel berhasil dibuat", data: newArticle });

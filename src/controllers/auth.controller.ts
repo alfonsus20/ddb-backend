@@ -6,6 +6,7 @@ import { LoginRequest, RegisterRequest } from "../interfaces/auth.interface";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
+import { UserPayload } from "../interfaces/user.interface";
 
 export const register = async (
   req: Request,
@@ -98,6 +99,42 @@ export const getAuthenticatedUser = async (
       message: "Profil berhasil didapatkan berdasarkan id",
       data: foundUser,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      throw new HttpException(400, "Body tidak valid", errors.array());
+    }
+
+    const payload = req.body as UserPayload;
+
+    delete payload.isAdmin;
+    delete payload.isVerified;
+
+    const foundUser = await User.findOne({
+      where: { id: req.user.id },
+    });
+
+    if (!foundUser) {
+      throw new HttpException(404, "User tidak ditemukan");
+    }
+
+    if (foundUser.id == req.user.id || req.user.isAdmin) {
+      await foundUser.update(payload);
+      res.json({ message: "User berhasil diupdate", data: foundUser });
+    } else {
+      throw new HttpException(403, "Forbidden");
+    }
   } catch (err) {
     next(err);
   }

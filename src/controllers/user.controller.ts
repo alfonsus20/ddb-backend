@@ -18,14 +18,23 @@ export const getAllUsersFilteredAndPaginated = async (
     rowsPerPage = 10,
     sortDirection = "ASC",
     name = "",
+    isGraduated,
   } = req.query;
+
+  const filters: { [key: string]: any } = {
+    name: { [Op.iLike]: `%${name.toLowerCase()}%` },
+  };
+
+  if (isGraduated !== undefined) {
+    filters.isGraduated = isGraduated;
+  }
 
   try {
     const users = await User.findAll({
       offset: page * rowsPerPage,
       limit: rowsPerPage,
       order: [["name", sortDirection]],
-      where: { name: { [Op.iLike]: `%${name.toLowerCase()}%` } },
+      where: filters,
     });
 
     res.json({
@@ -38,12 +47,20 @@ export const getAllUsersFilteredAndPaginated = async (
 };
 
 export const getAllUsers = async (
-  _: Request,
+  req: Request<{}, {}, {}, UserQuery>,
   res: Response,
   next: NextFunction
 ) => {
+  const { isGraduated } = req.query;
+
+  const filters: { [key: string]: any } = {};
+
+  if (isGraduated !== undefined) {
+    filters.isGraduated = isGraduated;
+  }
+
   try {
-    const users = await User.findAll();
+    const users = await User.findAll({ where: filters });
 
     res.json({
       message: "Semua user berhasil didapatkan",
@@ -90,24 +107,15 @@ export const updateUser = async (
     }
 
     const payload = req.body as UserPayload;
-
-    delete payload.isAdmin;
-    delete payload.isVerified;
-
     const foundUser = await User.findOne({
       where: { id: req.params.id },
     });
-
     if (!foundUser) {
       throw new HttpException(404, "User tidak ditemukan");
     }
-
-    if (foundUser.id == req.user.id || req.user.isAdmin) {
-      await foundUser.update(payload);
-      res.json({ message: "User berhasil diupdate", data: foundUser });
-    } else {
-      throw new HttpException(403, "Forbidden");
-    }
+    await foundUser.update(payload);
+    
+    res.json({ message: "User berhasil diupdate", data: foundUser });
   } catch (err) {
     next(err);
   }

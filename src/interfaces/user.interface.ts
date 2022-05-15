@@ -13,4 +13,5 @@ export interface UserPayload {
 
 export interface UserQuery extends CommonQuery {
   name?: string;
+  isGraduated?: boolean;
 }

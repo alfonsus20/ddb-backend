@@ -17,6 +17,7 @@ class Article extends Model<
   declare title: string;
   declare content: string;
   declare imageURL: string;
+  declare blurHash: string;
   declare userId: ForeignKey<User["id"]>;
 
   declare createdAt: CreationOptional<Date>;
@@ -35,12 +36,16 @@ Article.init(
       allowNull: false,
     },
     content: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     imageURL: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    blurHash: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
