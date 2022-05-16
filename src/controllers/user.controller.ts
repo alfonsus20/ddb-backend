@@ -14,7 +14,7 @@ export const getAllUsersFilteredAndPaginated = async (
   next: NextFunction
 ) => {
   const {
-    page = 0,
+    page = 1,
     rowsPerPage = 10,
     sortDirection = "ASC",
     name = "",
@@ -31,7 +31,7 @@ export const getAllUsersFilteredAndPaginated = async (
 
   try {
     const users = await User.findAll({
-      offset: page * rowsPerPage,
+      offset: (page - 1) * rowsPerPage,
       limit: rowsPerPage,
       order: [["name", sortDirection]],
       where: filters,

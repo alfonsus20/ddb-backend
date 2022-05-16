@@ -15,12 +15,12 @@ export const getAllArticleFilteredAndPaginated = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { page = 0, rowsPerPage = 10, sortDirection = "DESC" } = req.query;
+  const { page = 1, rowsPerPage = 10, sortDirection = "DESC" } = req.query;
 
   try {
     const articles = await Article.findAll({
       include: [{ model: User, as: "user", attributes: ["name"] }],
-      offset: page * rowsPerPage,
+      offset: (page - 1) * rowsPerPage,
       limit: rowsPerPage,
       order: [["createdAt", sortDirection]],
     });
