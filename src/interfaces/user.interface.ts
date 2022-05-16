@@ -5,6 +5,7 @@ export interface UserPayload {
   majority: string;
   entryYear: number;
   graduationYear?: number;
+  thesisTitle?: string;
   thesisURL?: string;
   profileImageURL?: string;
   isAdmin?: boolean;
@@ -14,4 +15,5 @@ export interface UserPayload {
 export interface UserQuery extends CommonQuery {
   name?: string;
   isGraduated?: boolean;
+  isVerified?: boolean;
 }

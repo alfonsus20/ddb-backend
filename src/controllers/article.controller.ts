@@ -124,6 +124,10 @@ export const updateArticle = async (
       throw new HttpException(404, "Artikel tidak ditemukan");
     }
 
+    payload.blurHash = (await encodeImageToBlurhash(
+      payload.imageURL
+    )) as string;
+    
     await foundArticle.update(payload);
     res.json({ message: "Artikel berhasil diupdate", data: foundArticle });
   } catch (err) {

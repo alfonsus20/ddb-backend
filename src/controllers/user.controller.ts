@@ -54,12 +54,16 @@ export const getAllUsers = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { isGraduated } = req.query;
+  const { isGraduated, isVerified } = req.query;
 
   const filters: { [key: string]: any } = {};
 
   if (isGraduated !== undefined) {
     filters.isGraduated = isGraduated;
+  }
+
+  if (isVerified !== undefined) {
+    filters.isVerified = isVerified;
   }
 
   try {
@@ -145,7 +149,7 @@ export const uploadProfileImage = async (
           upsert: false,
           contentType: image.mimetype,
         });
-
+        
         res.json({
           message: "File berhasil diupload",
           data: `${IMAGE_URL_PREFIX}/${filePath}`,

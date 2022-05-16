@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { getAuthenticatedUser, login, register, updateProfile } from "../controllers/auth.controller";
+import { getAuthenticatedUser, login, register, updateProfile, updateProfileImage } from "../controllers/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 const route = Router();
@@ -32,6 +32,7 @@ route.post(
 
 route.get("/profile", authMiddleware, getAuthenticatedUser);
 route.put("/profile", authMiddleware, updateProfile);
+route.put("/profile/profileImage", authMiddleware, updateProfileImage);
 
 
 export default route;

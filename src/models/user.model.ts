@@ -18,8 +18,10 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare majority: string;
   declare entryYear: number;
   declare graduationYear?: number;
+  declare thesisTitle?: string;
   declare thesisURL?: string;
   declare profileImageURL?: string;
+  declare blurHash?: string;
   declare isGraduated?: boolean;
   declare isAdmin?: boolean;
   declare isVerified?: boolean;
@@ -65,8 +67,16 @@ User.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    thesisTitle: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     thesisURL: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    blurHash: {
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     profileImageURL: {
