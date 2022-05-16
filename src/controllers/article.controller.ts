@@ -25,9 +25,12 @@ export const getAllArticleFilteredAndPaginated = async (
       order: [["createdAt", sortDirection]],
     });
 
+    const total = await Article.count();
+
     res.json({
       message: "Semua artikel berhasil didapatkan",
       data: articles,
+      totalData: total,
     });
   } catch (err) {
     next(err);
@@ -89,7 +92,9 @@ export const createArticle = async (
     }
 
     const payload = req.body as ArticlePayload;
-    payload.blurHash = await encodeImageToBlurhash(payload.imageURL) as string;
+    payload.blurHash = (await encodeImageToBlurhash(
+      payload.imageURL
+    )) as string;
     const newArticle = await req.user.createArticle(payload);
 
     res.json({ message: "Artikel berhasil dibuat", data: newArticle });

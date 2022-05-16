@@ -37,9 +37,12 @@ export const getAllUsersFilteredAndPaginated = async (
       where: filters,
     });
 
+    const totalUsers = await User.count();
+
     res.json({
       message: "Semua user berhasil didapatkan (paginated)",
       data: users,
+      totalData: totalUsers,
     });
   } catch (err) {
     next(err);
@@ -114,7 +117,7 @@ export const updateUser = async (
       throw new HttpException(404, "User tidak ditemukan");
     }
     await foundUser.update(payload);
-    
+
     res.json({ message: "User berhasil diupdate", data: foundUser });
   } catch (err) {
     next(err);
