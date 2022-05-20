@@ -7,8 +7,7 @@ import {
   getUserById,
   makeUserAdmin,
   makeUserVerified,
-  uploadProfileImage,
-  updateUser,
+  editUser,
 } from "../controllers/user.controller";
 import {
   adminMiddleware,
@@ -22,7 +21,6 @@ route.get("/findAll", getAllUsers);
 route.get("/:id", getUserById);
 route.get("/:id/makeAdmin", authMiddleware, adminMiddleware, makeUserAdmin);
 route.get("/:id/verify", authMiddleware, adminMiddleware, makeUserVerified);
-route.post("/profileImageUpload", uploadProfileImage);
 route.put(
   "/:id",
   authMiddleware,
@@ -31,11 +29,12 @@ route.put(
     body("name").notEmpty().isString(),
     body("majority").notEmpty().isString(),
     body("entryYear").notEmpty().isNumeric(),
+    body("isGraduated").default(false),
     body("graduationYear").optional().isNumeric(),
     body("thesisURL").optional().isURL(),
-    body("profileImageURL").optional().isURL(),
+    body("thesisTitle").optional(),
   ],
-  updateUser
+  editUser
 );
 route.delete("/:id", authMiddleware, adminMiddleware, deleteUser);
 

@@ -170,7 +170,7 @@ export const uploadArticleImage = async (
       try {
         const { image } = files as { image: fileUpload.UploadedFile };
 
-        const filePath = `users/${image.name}`;
+        const filePath = `articles/${image.name}`;
 
         await storage.from("images").upload(filePath, image.data, {
           cacheControl: "3600",

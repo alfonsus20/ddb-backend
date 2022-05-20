@@ -128,42 +128,6 @@ export const updateUser = async (
   }
 };
 
-export const uploadProfileImage = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { files } = req;
-
-  try {
-    if (!files) {
-      throw new HttpException(400, "Tidak ada gambar");
-    } else {
-      try {
-        const { image } = files as { image: fileUpload.UploadedFile };
-
-        const filePath = `users/${image.name}`;
-
-        await storage.from("images").upload(filePath, image.data, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: image.mimetype,
-        });
-        
-        res.json({
-          message: "File berhasil diupload",
-          data: `${IMAGE_URL_PREFIX}/${filePath}`,
-        });
-      } catch (err) {
-        console.log(err);
-        throw new HttpException(500, "Failed to upload");
-      }
-    }
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const makeUserAdmin = async (
   req: Request,
   res: Response,
@@ -201,6 +165,38 @@ export const makeUserVerified = async (
 
     await foundUser.update({ isVerified: true });
     res.json({ message: "User berhasil diverifikasi", data: null });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const editUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      throw new HttpException(400, "Body tidak valid", errors.array());
+    }
+
+    const payload = req.body as UserPayload;
+
+    const foundUser = await User.findOne({
+      where: { id: req.params.id },
+    });
+
+    if (!foundUser) {
+      throw new HttpException(404, "User tidak ditemukan");
+    }
+
+    delete payload.isAdmin;
+    delete payload.isVerified;
+
+    await foundUser.update(payload);
+    res.json({ message: "User berhasil diupdate", data: foundUser });
   } catch (err) {
     next(err);
   }

@@ -13,7 +13,7 @@ export const encodeImageToBlurhash = async (imageURL: string) => {
     sharp(bufferData)
       .raw()
       .ensureAlpha()
-      .resize(32, 32, { fit: "inside" })
+      .resize(32, 32, { fit: 'cover' })
       .toBuffer((err, buffer, { width, height }) => {
         if (err) return reject(err);
         resolve(encode(new Uint8ClampedArray(buffer), width, height, 4, 4));

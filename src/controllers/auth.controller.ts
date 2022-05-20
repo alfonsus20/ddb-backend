@@ -76,7 +76,7 @@ export const login = async (
     }
 
     const token = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
-      expiresIn: "2h",
+      expiresIn: "24h",
     });
 
     res.json({ message: "Login berhasil", data: { token } });
@@ -133,7 +133,7 @@ export const updateProfile = async (
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    if (foundUser.id == req.user.id || req.user.isAdmin) {
+    if (foundUser.id == req.user.id) {
       await foundUser.update(payload);
       res.json({ message: "User berhasil diupdate", data: foundUser });
     } else {
