@@ -1,7 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { HttpException } from "../exceptions/HttpException";
-import { UserPayload, UserQuery } from "../interfaces/user.interface";
+import { UserQuery } from "../interfaces/user.interface";
 import { USER_SHOWN_ATTRIBUTES } from "../utils/constants";
 import { prisma } from "../utils/db";
 
@@ -166,7 +167,7 @@ export const editUser = async (
       throw new HttpException(400, "Body tidak valid", errors.array());
     }
 
-    const payload = req.body as UserPayload;
+    const payload = req.body as Prisma.UserUpdateInput;
 
     const foundUser = await prisma.user.findFirst({
       where: { id: +req.params.id },

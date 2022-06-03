@@ -1,9 +1,9 @@
+import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import fileUpload from "express-fileupload";
 import { validationResult } from "express-validator";
 import storage from "../config/storage";
 import { HttpException } from "../exceptions/HttpException";
-import { ArticlePayload } from "../interfaces/article.interface";
 import { CommonQuery } from "../interfaces/common.interface";
 import { IMAGE_URL_PREFIX } from "../utils/constants";
 import { prisma } from "../utils/db";
@@ -92,7 +92,7 @@ export const createArticle = async (
       throw new HttpException(400, "Body tidak valid", errors.array());
     }
 
-    const payload = req.body as ArticlePayload;
+    const payload = req.body as Prisma.ArticleUncheckedCreateInput;
     payload.blurHash = (await encodeImageToBlurhash(
       payload.imageURL
     )) as string;
@@ -122,7 +122,7 @@ export const updateArticle = async (
       throw new HttpException(400, "Body tidak valid", errors.array());
     }
 
-    const payload = req.body as ArticlePayload;
+    const payload = req.body as Prisma.ArticleUpdateInput;
     const foundArticle = await prisma.article.findUnique({
       where: { id: +req.params.id },
     });
@@ -132,7 +132,7 @@ export const updateArticle = async (
     }
 
     payload.blurHash = (await encodeImageToBlurhash(
-      payload.imageURL
+      payload.imageURL as string
     )) as string;
 
     await prisma.article.update({

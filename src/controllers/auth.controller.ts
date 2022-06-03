@@ -5,12 +5,12 @@ import { LoginRequest, RegisterRequest } from "../interfaces/auth.interface";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
-import { UserPayload } from "../interfaces/user.interface";
 import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from "../utils/constants";
 import fileUpload from "express-fileupload";
 import storage from "../config/storage";
 import { encodeImageToBlurhash } from "../utils/helpers";
 import { prisma } from "../utils/db";
+import { Prisma } from "@prisma/client";
 
 export const register = async (
   req: Request,
@@ -117,7 +117,7 @@ export const updateProfile = async (
       throw new HttpException(400, "Body tidak valid", errors.array());
     }
 
-    const payload = req.body as UserPayload;
+    const payload = req.body as Prisma.UserUpdateInput;
 
     const foundUser = await prisma.user.findUnique({
       where: { id: req.user.id },
