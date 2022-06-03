@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "node dist/index.js",
-    "postinstall": "tsc",
+    "build": "prisma generate --schema=./src/prisma/schema.prisma && tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "prisma": {
