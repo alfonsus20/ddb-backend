@@ -3,7 +3,7 @@ import { HttpException } from "../exceptions/HttpException";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { TokenPayload } from "../interfaces/token.interface";
-import User from "../models/user.model";
+import { prisma } from "../utils/db";
 
 export const authMiddleware = async (
   req: Request,
@@ -27,7 +27,7 @@ export const authMiddleware = async (
 
     try {
       const { userId } = jwt.verify(token, JWT_SECRET) as TokenPayload;
-      const user = await User.findOne({ where: { id: userId } });
+      const user = await prisma.user.findFirst({ where: { id: userId } });
 
       if (user) {
         req.user = user;

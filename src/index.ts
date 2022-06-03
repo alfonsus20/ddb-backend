@@ -1,7 +1,6 @@
 import express from "express";
 import { PORT } from "./config";
 import cors from "cors";
-import { connectDatabase } from "./utils/db";
 import authRoute from "./routes/auth.route";
 import articleRoute from "./routes/article.route";
 import userRoute from "./routes/user.route";
@@ -14,10 +13,8 @@ app.use(express.json());
 app.use(cors());
 app.use(fileUpload());
 
-connectDatabase();
-
-app.get("/", (req, res) => {
-  res.json({ message: "Hai" });
+app.get("/", (_, res) => {
+  res.json({ message: "DDB Official Backend API" });
 });
 
 app.use("/", authRoute);

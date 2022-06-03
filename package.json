@@ -29,7 +29,6 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.19.0",
     "sharp": "^0.30.4"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { CommonQuery } from "./index.interface";
+import { CommonQuery } from "./common.interface";
 
 export interface UserPayload {
   name: string;

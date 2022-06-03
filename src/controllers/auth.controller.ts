@@ -27,7 +27,7 @@ export const register = async (
     const { email, password, name, majority, entryYear } =
       req.body as RegisterRequest;
 
-    const existingUser = await prisma.user.findFirst({ where: { email } });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       throw new HttpException(400, "Email telah digunakan");
     }
@@ -59,7 +59,7 @@ export const login = async (
 
     const { email, password } = req.body as LoginRequest;
 
-    const existingUser = await prisma.user.findFirst({ where: { email } });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (!existingUser) {
       throw new HttpException(404, "Email tidak ditemukan");
     }
@@ -88,8 +88,8 @@ export const getAuthenticatedUser = async (
   next: NextFunction
 ) => {
   try {
-    const foundUser = await prisma.user.findFirst({
-      where: { id: +req.user.id },
+    const foundUser = await prisma.user.findUnique({
+      where: { id: req.user.id },
     });
 
     if (!foundUser) {
@@ -119,8 +119,8 @@ export const updateProfile = async (
 
     const payload = req.body as UserPayload;
 
-    const foundUser = await prisma.user.findFirst({
-      where: { id: +req.user.id },
+    const foundUser = await prisma.user.findUnique({
+      where: { id: req.user.id },
     });
 
     if (!foundUser) {
@@ -172,8 +172,8 @@ export const updateProfileImage = async (
           contentType: image.mimetype,
         });
 
-        const foundUser = await prisma.user.findFirst({
-          where: { id: +req.user.id },
+        const foundUser = await prisma.user.findUnique({
+          where: { id: req.user.id },
         });
 
         if (!foundUser) {

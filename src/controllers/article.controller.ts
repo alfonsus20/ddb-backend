@@ -4,10 +4,9 @@ import { validationResult } from "express-validator";
 import storage from "../config/storage";
 import { HttpException } from "../exceptions/HttpException";
 import { ArticlePayload } from "../interfaces/article.interface";
-import { CommonQuery } from "../interfaces/index.interface";
-import Article from "../models/article.model";
-import User from "../models/user.model";
+import { CommonQuery } from "../interfaces/common.interface";
 import { IMAGE_URL_PREFIX } from "../utils/constants";
+import { prisma } from "../utils/db";
 import { encodeImageToBlurhash } from "../utils/helpers";
 
 export const getAllArticleFilteredAndPaginated = async (
@@ -15,17 +14,19 @@ export const getAllArticleFilteredAndPaginated = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { page = 1, rowsPerPage = 10, sortDirection = "DESC" } = req.query;
+  const { page = 1, rowsPerPage = 10, sortDirection = "desc" } = req.query;
 
   try {
-    const articles = await Article.findAll({
-      include: [{ model: User, as: "user", attributes: ["name"] }],
-      offset: (page - 1) * rowsPerPage,
-      limit: rowsPerPage,
-      order: [["createdAt", sortDirection]],
+    const articles = await prisma.article.findMany({
+      include: {
+        user: true,
+      },
+      take: rowsPerPage,
+      skip: (page - 1) * rowsPerPage,
+      orderBy: { createdAt: sortDirection },
     });
 
-    const total = await Article.count();
+    const total = await prisma.article.count();
 
     res.json({
       message: "Semua artikel berhasil didapatkan",
@@ -43,8 +44,8 @@ export const getAllArticle = async (
   next: NextFunction
 ) => {
   try {
-    const articles = await Article.findAll({
-      include: [{ model: User, as: "user", attributes: ["name"] }],
+    const articles = await prisma.article.findMany({
+      include: { user: true },
     });
 
     res.json({
@@ -62,8 +63,8 @@ export const getArticleById = async (
   next: NextFunction
 ) => {
   try {
-    const foundArticle = await Article.findOne({
-      where: { id: req.params.id },
+    const foundArticle = await prisma.article.findUnique({
+      where: { id: +req.params.id },
     });
 
     if (!foundArticle) {
@@ -95,7 +96,13 @@ export const createArticle = async (
     payload.blurHash = (await encodeImageToBlurhash(
       payload.imageURL
     )) as string;
-    const newArticle = await req.user.createArticle(payload);
+
+    const newArticle = await prisma.article.create({
+      data: {
+        ...payload,
+        userId: req.user.id,
+      },
+    });
 
     res.json({ message: "Artikel berhasil dibuat", data: newArticle });
   } catch (err) {
@@ -116,8 +123,8 @@ export const updateArticle = async (
     }
 
     const payload = req.body as ArticlePayload;
-    const foundArticle = await Article.findOne({
-      where: { id: req.params.id },
+    const foundArticle = await prisma.article.findUnique({
+      where: { id: +req.params.id },
     });
 
     if (!foundArticle) {
@@ -127,8 +134,11 @@ export const updateArticle = async (
     payload.blurHash = (await encodeImageToBlurhash(
       payload.imageURL
     )) as string;
-    
-    await foundArticle.update(payload);
+
+    await prisma.article.update({
+      data: payload,
+      where: { id: +req.params.id },
+    });
     res.json({ message: "Artikel berhasil diupdate", data: foundArticle });
   } catch (err) {
     next(err);
@@ -141,15 +151,15 @@ export const deleteArticle = async (
   next: NextFunction
 ) => {
   try {
-    const foundArticle = await Article.findOne({
-      where: { id: req.params.id },
+    const foundArticle = await prisma.article.findUnique({
+      where: { id: +req.params.id },
     });
 
     if (!foundArticle) {
       throw new HttpException(404, "Artikel tidak ditemukan");
     }
 
-    await foundArticle.destroy();
+    await prisma.article.delete({ where: { id: +req.params.id } });
     res.json({ message: "Artikel berhasil dihapus", data: null });
   } catch (err) {
     next(err);
