@@ -4,7 +4,7 @@ import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import fileUpload from 'express-fileupload';
 import { Prisma } from '@prisma/client';
-import { HttpException } from '../exceptions/HttpException';
+import HttpException from '../exceptions/HttpException';
 import { LoginRequest, RegisterRequest } from '../interfaces/auth.interface';
 import { JWT_SECRET, storage } from '../config';
 import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from '../utils/constants';
