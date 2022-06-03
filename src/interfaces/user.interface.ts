@@ -1,4 +1,4 @@
-import { CommonQuery } from "./common.interface";
+import { CommonQuery } from './common.interface';
 
 export interface UserQuery extends CommonQuery {
   name?: string;

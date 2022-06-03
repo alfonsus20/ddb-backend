@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { body } from "express-validator";
+import { Router } from 'express';
+import { body } from 'express-validator';
 import {
   deleteUser,
   getAllUsers,
@@ -8,34 +8,34 @@ import {
   makeUserAdmin,
   makeUserVerified,
   editUser,
-} from "../controllers/user.controller";
+} from '../controllers/user.controller';
 import {
   adminMiddleware,
   authMiddleware,
-} from "../middlewares/auth.middleware";
+} from '../middlewares/auth.middleware';
 
 const route = Router();
 
-route.get("/", getAllUsersFilteredAndPaginated);
-route.get("/findAll", getAllUsers);
-route.get("/:id", getUserById);
-route.get("/:id/makeAdmin", authMiddleware, adminMiddleware, makeUserAdmin);
-route.get("/:id/verify", authMiddleware, adminMiddleware, makeUserVerified);
+route.get('/', getAllUsersFilteredAndPaginated);
+route.get('/findAll', getAllUsers);
+route.get('/:id', getUserById);
+route.get('/:id/makeAdmin', authMiddleware, adminMiddleware, makeUserAdmin);
+route.get('/:id/verify', authMiddleware, adminMiddleware, makeUserVerified);
 route.put(
-  "/:id",
+  '/:id',
   authMiddleware,
   adminMiddleware,
   [
-    body("name").notEmpty().isString(),
-    body("majority").notEmpty().isString(),
-    body("entryYear").notEmpty().isNumeric(),
-    body("isGraduated").default(false),
-    body("graduationYear").optional().isNumeric(),
-    body("thesisURL").optional().isURL(),
-    body("thesisTitle").optional(),
+    body('name').notEmpty().isString(),
+    body('majority').notEmpty().isString(),
+    body('entryYear').notEmpty().isNumeric(),
+    body('isGraduated').default(false),
+    body('graduationYear').optional().isNumeric(),
+    body('thesisURL').optional().isURL(),
+    body('thesisTitle').optional(),
   ],
-  editUser
+  editUser,
 );
-route.delete("/:id", authMiddleware, adminMiddleware, deleteUser);
+route.delete('/:id', authMiddleware, adminMiddleware, deleteUser);
 
 export default route;

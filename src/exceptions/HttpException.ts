@@ -1,8 +1,10 @@
-import { ValidationError } from "express-validator";
+import { ValidationError } from 'express-validator';
 
-export class HttpException extends Error {
+export default class HttpException extends Error {
   public status: number;
+
   public message: string;
+
   public data: ValidationError[];
 
   constructor(status: number, message: string, data?: ValidationError[]) {

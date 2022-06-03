@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { body } from "express-validator";
+import { Router } from 'express';
+import { body } from 'express-validator';
 import {
   createArticle,
   deleteArticle,
@@ -8,58 +8,58 @@ import {
   getArticleById,
   updateArticle,
   uploadArticleImage,
-} from "../controllers/article.controller";
+} from '../controllers/article.controller';
 import {
   adminMiddleware,
   authMiddleware,
-} from "../middlewares/auth.middleware";
+} from '../middlewares/auth.middleware';
 
 const route = Router();
 
-route.get("/", getAllArticleFilteredAndPaginated);
+route.get('/', getAllArticleFilteredAndPaginated);
 
-route.get("/findAll", getAllArticle);
+route.get('/findAll', getAllArticle);
 
-route.get("/:id", getArticleById);
+route.get('/:id', getArticleById);
 
 route.post(
-  "/",
+  '/',
   authMiddleware,
   adminMiddleware,
   [
-    body("title").notEmpty().isString(),
-    body("content").notEmpty().isString(),
-    body("imageURL").notEmpty().isString(),
+    body('title').notEmpty().isString(),
+    body('content').notEmpty().isString(),
+    body('imageURL').notEmpty().isString(),
   ],
-  createArticle
+  createArticle,
 );
 
 route.post(
-  "/",
+  '/',
   authMiddleware,
   adminMiddleware,
   [
-    body("title").notEmpty().isString(),
-    body("content").notEmpty().isString(),
-    body("imageURL").notEmpty().isString(),
+    body('title').notEmpty().isString(),
+    body('content').notEmpty().isString(),
+    body('imageURL').notEmpty().isString(),
   ],
-  createArticle
+  createArticle,
 );
 
 route.put(
-  "/:id",
+  '/:id',
   authMiddleware,
   adminMiddleware,
   [
-    body("title").notEmpty().isString(),
-    body("content").notEmpty().isString(),
-    body("imageURL").notEmpty().isString(),
+    body('title').notEmpty().isString(),
+    body('content').notEmpty().isString(),
+    body('imageURL').notEmpty().isString(),
   ],
-  updateArticle
+  updateArticle,
 );
 
-route.post("/imageUpload", authMiddleware, adminMiddleware, uploadArticleImage);
+route.post('/imageUpload', authMiddleware, adminMiddleware, uploadArticleImage);
 
-route.delete("/:id", authMiddleware, adminMiddleware, deleteArticle);
+route.delete('/:id', authMiddleware, adminMiddleware, deleteArticle);
 
 export default route;

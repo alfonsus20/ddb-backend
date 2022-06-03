@@ -1,28 +1,28 @@
-import { NextFunction, Request, Response } from "express";
-import { HttpException } from "../exceptions/HttpException";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/config";
-import { TokenPayload } from "../interfaces/token.interface";
-import { prisma } from "../utils/db";
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import HttpException from '../exceptions/HttpException';
+import { JWT_SECRET } from '../config';
+import { TokenPayload } from '../interfaces/token.interface';
+import prisma from '../utils/prisma';
 
 export const authMiddleware = async (
   req: Request,
   _: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const authHeader = req.get("Authorization");
+    const authHeader = req.get('Authorization');
 
-    let token = "";
+    let token = '';
 
     if (!authHeader) {
-      throw new HttpException(401, "Not authenticated");
+      throw new HttpException(401, 'Not authenticated');
     } else {
-      token = authHeader.split(" ")[1];
+      [token] = authHeader.split(' ');
     }
 
     if (!token) {
-      throw new HttpException(401, "Token not found");
+      throw new HttpException(401, 'Token not found');
     }
 
     try {
@@ -33,10 +33,10 @@ export const authMiddleware = async (
         req.user = user;
         next();
       } else {
-        throw new HttpException(404, "User not found");
+        throw new HttpException(404, 'User not found');
       }
     } catch (err) {
-      throw new HttpException(401, "Token invalid");
+      throw new HttpException(401, 'Token invalid');
     }
   } catch (err) {
     next(err);
@@ -46,11 +46,11 @@ export const authMiddleware = async (
 export const adminMiddleware = async (
   req: Request,
   _: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    next(new HttpException(403, "Not authorized as admin"));
+    next(new HttpException(403, 'Not authorized as admin'));
   }
 };

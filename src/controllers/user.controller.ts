@@ -1,21 +1,21 @@
-import { Prisma } from "@prisma/client";
-import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
-import { HttpException } from "../exceptions/HttpException";
-import { UserQuery } from "../interfaces/user.interface";
-import { USER_SHOWN_ATTRIBUTES } from "../utils/constants";
-import { prisma } from "../utils/db";
+import { Prisma } from '@prisma/client';
+import { NextFunction, Request, Response } from 'express';
+import { validationResult } from 'express-validator';
+import HttpException from '../exceptions/HttpException';
+import { UserQuery } from '../interfaces/user.interface';
+import { USER_SHOWN_ATTRIBUTES } from '../utils/constants';
+import prisma from '../utils/prisma';
 
 export const getAllUsersFilteredAndPaginated = async (
   req: Request<{}, {}, {}, UserQuery>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const {
     page = 1,
     rowsPerPage = 10,
-    sortDirection = "asc",
-    name = "",
+    sortDirection = 'asc',
+    name = '',
     isGraduated,
   } = req.query;
 
@@ -39,7 +39,7 @@ export const getAllUsersFilteredAndPaginated = async (
     const totalUsers = await prisma.user.count();
 
     res.json({
-      message: "Semua user berhasil didapatkan (paginated)",
+      message: 'Semua user berhasil didapatkan (paginated)',
       data: users,
       totalData: totalUsers,
     });
@@ -51,7 +51,7 @@ export const getAllUsersFilteredAndPaginated = async (
 export const getAllUsers = async (
   req: Request<{}, {}, {}, UserQuery>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { isGraduated, isVerified } = req.query;
 
@@ -72,7 +72,7 @@ export const getAllUsers = async (
     });
 
     res.json({
-      message: "Semua user berhasil didapatkan",
+      message: 'Semua user berhasil didapatkan',
       data: users,
     });
   } catch (err) {
@@ -83,7 +83,7 @@ export const getAllUsers = async (
 export const getUserById = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const foundUser = await prisma.user.findFirst({
@@ -91,11 +91,11 @@ export const getUserById = async (
     });
 
     if (!foundUser) {
-      throw new HttpException(404, "User tidak ditemukan");
+      throw new HttpException(404, 'User tidak ditemukan');
     }
 
     res.json({
-      message: "User berhasil didapatkan berdasarkan id",
+      message: 'User berhasil didapatkan berdasarkan id',
       data: foundUser,
     });
   } catch (err) {
@@ -106,7 +106,7 @@ export const getUserById = async (
 export const makeUserAdmin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const foundUser = await prisma.user.findFirst({
@@ -114,7 +114,7 @@ export const makeUserAdmin = async (
     });
 
     if (!foundUser) {
-      throw new HttpException(404, "User tidak ditemukan");
+      throw new HttpException(404, 'User tidak ditemukan');
     }
 
     const updatedUser = await prisma.user.update({
@@ -123,7 +123,7 @@ export const makeUserAdmin = async (
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: "User berhasil dijadikan admin", data: updatedUser });
+    res.json({ message: 'User berhasil dijadikan admin', data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -132,7 +132,7 @@ export const makeUserAdmin = async (
 export const makeUserVerified = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const foundUser = await prisma.user.findFirst({
@@ -140,7 +140,7 @@ export const makeUserVerified = async (
     });
 
     if (!foundUser) {
-      throw new HttpException(404, "User tidak ditemukan");
+      throw new HttpException(404, 'User tidak ditemukan');
     }
 
     const updatedUser = await prisma.user.update({
@@ -149,7 +149,7 @@ export const makeUserVerified = async (
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: "User berhasil diverifikasi", data: updatedUser });
+    res.json({ message: 'User berhasil diverifikasi', data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -158,13 +158,13 @@ export const makeUserVerified = async (
 export const editUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new HttpException(400, "Body tidak valid", errors.array());
+      throw new HttpException(400, 'Body tidak valid', errors.array());
     }
 
     const payload = req.body as Prisma.UserUpdateInput;
@@ -174,7 +174,7 @@ export const editUser = async (
     });
 
     if (!foundUser) {
-      throw new HttpException(404, "User tidak ditemukan");
+      throw new HttpException(404, 'User tidak ditemukan');
     }
 
     const updatedUser = await prisma.user.update({
@@ -183,7 +183,7 @@ export const editUser = async (
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: "User berhasil diupdate", data: updatedUser });
+    res.json({ message: 'User berhasil diupdate', data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -192,7 +192,7 @@ export const editUser = async (
 export const deleteUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const foundUser = await prisma.user.findFirst({
@@ -200,12 +200,12 @@ export const deleteUser = async (
     });
 
     if (!foundUser) {
-      throw new HttpException(404, "User tidak ditemukan");
+      throw new HttpException(404, 'User tidak ditemukan');
     }
 
     await prisma.user.delete({ where: { id: +req.params.id } });
 
-    res.json({ message: "User berhasil dihapus", data: null });
+    res.json({ message: 'User berhasil dihapus', data: null });
   } catch (err) {
     next(err);
   }

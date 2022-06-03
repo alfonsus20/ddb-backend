@@ -1,38 +1,39 @@
-import { Router } from "express";
-import { body } from "express-validator";
-import { getAuthenticatedUser, login, register, updateProfile, updateProfileImage } from "../controllers/auth.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
+import { Router } from 'express';
+import { body } from 'express-validator';
+import {
+  getAuthenticatedUser, login, register, updateProfile, updateProfileImage,
+} from '../controllers/auth.controller';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 const route = Router();
 
 route.post(
-  "/register",
+  '/register',
   [
-    body("email").notEmpty().isEmail().withMessage("Email tidak valid"),
-    body("password")
+    body('email').notEmpty().isEmail().withMessage('Email tidak valid'),
+    body('password')
       .notEmpty()
       .isString()
       .isLength({ min: 8 })
-      .withMessage("Panjang password minimal 8 karakter"),
-    body("name").notEmpty().isString(),
-    body("majority").notEmpty().isString(),
-    body("entryYear").notEmpty().isNumeric(),
+      .withMessage('Panjang password minimal 8 karakter'),
+    body('name').notEmpty().isString(),
+    body('majority').notEmpty().isString(),
+    body('entryYear').notEmpty().isNumeric(),
   ],
-  register
+  register,
 );
 
 route.post(
-  "/login",
+  '/login',
   [
-    body("email").notEmpty().isEmail().withMessage("Email tidak valid"),
-    body("password").notEmpty().isString(),
+    body('email').notEmpty().isEmail().withMessage('Email tidak valid'),
+    body('password').notEmpty().isString(),
   ],
-  login
+  login,
 );
 
-route.get("/profile", authMiddleware, getAuthenticatedUser);
-route.put("/profile", authMiddleware, updateProfile);
-route.put("/profile/profileImage", authMiddleware, updateProfileImage);
-
+route.get('/profile', authMiddleware, getAuthenticatedUser);
+route.put('/profile', authMiddleware, updateProfile);
+route.put('/profile/profileImage', authMiddleware, updateProfileImage);
 
 export default route;
