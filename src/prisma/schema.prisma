@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Article {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar(255)
+  content   String
+  imageURL  String    @db.VarChar(255)
+  blurHash  String?
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime? @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @default(now()) @db.Timestamptz(6)
+  deleted   DateTime?
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(255)
+  email           String    @db.VarChar(255)
+  password        String    @db.VarChar(255)
+  majority        String    @db.VarChar(255)
+  entryYear       Int
+  graduationYear  Int?
+  thesisTitle     String?   @db.VarChar(255)
+  thesisURL       String?   @db.VarChar(255)
+  blurHash        String    @default("URLXY;xu~q%M~qofRjj[RjfQIUWB?bj[WBj[") @db.VarChar(255)
+  profileImageURL String    @default("https://gdyzsghhuucelkwpprwa.supabase.co/storage/v1/object/public/images/users/avatar.jpg") @db.VarChar(255)
+  isAdmin         Boolean?  @default(false)
+  isGraduated     Boolean?  @default(false)
+  isVerified      Boolean?  @default(false)
+  articles        Article[]
+  createdAt       DateTime? @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime? @default(now()) @db.Timestamptz(6)
+  deleted         DateTime?
+}

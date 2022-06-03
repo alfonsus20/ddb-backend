@@ -2,11 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { HttpException } from "../exceptions/HttpException";
 import { UserPayload, UserQuery } from "../interfaces/user.interface";
-import User from "../models/user.model";
-import { Op } from "sequelize";
-import fileUpload from "express-fileupload";
-import storage from "../config/storage";
-import { IMAGE_URL_PREFIX } from "../utils/constants";
+import { prisma } from "../utils/db";
 
 export const getAllUsersFilteredAndPaginated = async (
   req: Request<{}, {}, {}, UserQuery>,
@@ -16,13 +12,13 @@ export const getAllUsersFilteredAndPaginated = async (
   const {
     page = 1,
     rowsPerPage = 10,
-    sortDirection = "ASC",
+    sortDirection = "asc",
     name = "",
     isGraduated,
   } = req.query;
 
   const filters: { [key: string]: any } = {
-    name: { [Op.iLike]: `%${name.toLowerCase()}%` },
+    name: { contains: name },
   };
 
   if (isGraduated !== undefined) {
@@ -30,14 +26,32 @@ export const getAllUsersFilteredAndPaginated = async (
   }
 
   try {
-    const users = await User.findAll({
-      offset: (page - 1) * rowsPerPage,
-      limit: rowsPerPage,
-      order: [["name", sortDirection]],
+    const users = await prisma.user.findMany({
       where: filters,
+      orderBy: { name: sortDirection },
+      take: rowsPerPage,
+      skip: (page - 1) * rowsPerPage,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: false,
+        thesisTitle: true,
+        thesisURL: true,
+        entryYear: true,
+        graduationYear: true,
+        majority: true,
+        blurHash: true,
+        profileImageURL: true,
+        isAdmin: true,
+        isVerified: true,
+        isGraduated: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
-    const totalUsers = await User.count();
+    const totalUsers = await prisma.user.count();
 
     res.json({
       message: "Semua user berhasil didapatkan (paginated)",
@@ -67,7 +81,27 @@ export const getAllUsers = async (
   }
 
   try {
-    const users = await User.findAll({ where: filters });
+    const users = await prisma.user.findMany({
+      where: filters,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: false,
+        thesisTitle: true,
+        thesisURL: true,
+        entryYear: true,
+        graduationYear: true,
+        majority: true,
+        blurHash: true,
+        profileImageURL: true,
+        isAdmin: true,
+        isVerified: true,
+        isGraduated: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
     res.json({
       message: "Semua user berhasil didapatkan",
@@ -84,8 +118,8 @@ export const getUserById = async (
   next: NextFunction
 ) => {
   try {
-    const foundUser = await User.findOne({
-      where: { id: req.params.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.params.id },
     });
 
     if (!foundUser) {
@@ -101,48 +135,25 @@ export const getUserById = async (
   }
 };
 
-export const updateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      throw new HttpException(400, "Body tidak valid", errors.array());
-    }
-
-    const payload = req.body as UserPayload;
-    const foundUser = await User.findOne({
-      where: { id: req.params.id },
-    });
-    if (!foundUser) {
-      throw new HttpException(404, "User tidak ditemukan");
-    }
-    await foundUser.update(payload);
-
-    res.json({ message: "User berhasil diupdate", data: foundUser });
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const makeUserAdmin = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const foundUser = await User.findOne({
-      where: { id: req.params.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.params.id },
     });
 
     if (!foundUser) {
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    await foundUser.update({ isAdmin: true });
+    await prisma.user.update({
+      where: { id: +req.params.id },
+      data: { isAdmin: true },
+    });
+
     res.json({ message: "User berhasil dijadikan admin", data: null });
   } catch (err) {
     next(err);
@@ -155,15 +166,19 @@ export const makeUserVerified = async (
   next: NextFunction
 ) => {
   try {
-    const foundUser = await User.findOne({
-      where: { id: req.params.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.params.id },
     });
 
     if (!foundUser) {
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    await foundUser.update({ isVerified: true });
+    await prisma.user.update({
+      where: { id: +req.params.id },
+      data: { isVerified: true },
+    });
+
     res.json({ message: "User berhasil diverifikasi", data: null });
   } catch (err) {
     next(err);
@@ -184,18 +199,16 @@ export const editUser = async (
 
     const payload = req.body as UserPayload;
 
-    const foundUser = await User.findOne({
-      where: { id: req.params.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.params.id },
     });
 
     if (!foundUser) {
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    delete payload.isAdmin;
-    delete payload.isVerified;
+    await prisma.user.update({ where: { id: +req.params.id }, data: payload });
 
-    await foundUser.update(payload);
     res.json({ message: "User berhasil diupdate", data: foundUser });
   } catch (err) {
     next(err);
@@ -208,15 +221,16 @@ export const deleteUser = async (
   next: NextFunction
 ) => {
   try {
-    const foundUser = await User.findOne({
-      where: { id: req.params.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.params.id },
     });
 
     if (!foundUser) {
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    await foundUser.destroy();
+    await prisma.user.delete({ where: { id: +req.params.id } });
+
     res.json({ message: "User berhasil dihapus", data: null });
   } catch (err) {
     next(err);
