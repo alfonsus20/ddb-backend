@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { HttpException } from "../exceptions/HttpException";
-import User from "../models/user.model";
 import { LoginRequest, RegisterRequest } from "../interfaces/auth.interface";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { UserPayload } from "../interfaces/user.interface";
-import { IMAGE_URL_PREFIX } from "../utils/constants";
+import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from "../utils/constants";
 import fileUpload from "express-fileupload";
 import storage from "../config/storage";
 import { encodeImageToBlurhash } from "../utils/helpers";
+import { prisma } from "../utils/db";
 
 export const register = async (
   req: Request,
@@ -27,19 +27,16 @@ export const register = async (
     const { email, password, name, majority, entryYear } =
       req.body as RegisterRequest;
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await prisma.user.findFirst({ where: { email } });
     if (existingUser) {
       throw new HttpException(400, "Email telah digunakan");
     }
 
     const hashedPassword = await bcryptjs.hash(password, 12);
 
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      majority,
-      entryYear,
+    const newUser = await prisma.user.create({
+      data: { name, email, password: hashedPassword, majority, entryYear },
+      select: USER_SHOWN_ATTRIBUTES,
     });
 
     res.json({ message: "User berhasil terdaftar", data: newUser });
@@ -62,7 +59,7 @@ export const login = async (
 
     const { email, password } = req.body as LoginRequest;
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await prisma.user.findFirst({ where: { email } });
     if (!existingUser) {
       throw new HttpException(404, "Email tidak ditemukan");
     }
@@ -91,8 +88,8 @@ export const getAuthenticatedUser = async (
   next: NextFunction
 ) => {
   try {
-    const foundUser = await User.findOne({
-      where: { id: req.user.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.user.id },
     });
 
     if (!foundUser) {
@@ -122,11 +119,8 @@ export const updateProfile = async (
 
     const payload = req.body as UserPayload;
 
-    delete payload.isAdmin;
-    delete payload.isVerified;
-
-    const foundUser = await User.findOne({
-      where: { id: req.user.id },
+    const foundUser = await prisma.user.findFirst({
+      where: { id: +req.user.id },
     });
 
     if (!foundUser) {
@@ -134,8 +128,20 @@ export const updateProfile = async (
     }
 
     if (foundUser.id == req.user.id) {
-      await foundUser.update(payload);
-      res.json({ message: "User berhasil diupdate", data: foundUser });
+      const updatedUser = await prisma.user.update({
+        where: { id: req.user.id },
+        data: {
+          name: payload.name,
+          entryYear: payload.entryYear,
+          majority: payload.majority,
+          isGraduated: payload.isGraduated,
+          thesisTitle: payload.thesisTitle,
+          thesisURL: payload.thesisURL,
+          graduationYear: payload.graduationYear,
+        },
+        select: USER_SHOWN_ATTRIBUTES,
+      });
+      res.json({ message: "User berhasil diupdate", data: updatedUser });
     } else {
       throw new HttpException(403, "Forbidden");
     }
@@ -166,8 +172,8 @@ export const updateProfileImage = async (
           contentType: image.mimetype,
         });
 
-        const foundUser = await User.findOne({
-          where: { id: req.user.id },
+        const foundUser = await prisma.user.findFirst({
+          where: { id: +req.user.id },
         });
 
         if (!foundUser) {
@@ -180,14 +186,15 @@ export const updateProfileImage = async (
           profileImageURL
         )) as string;
 
-        await foundUser.update({
-          profileImageURL,
-          blurHash,
+        const updatedUser = await prisma.user.update({
+          where: { id: req.user.id },
+          data: { profileImageURL, blurHash },
+          select: USER_SHOWN_ATTRIBUTES,
         });
 
         res.json({
           message: "Gambar profil berhasil diperbarui",
-          data: null,
+          data: updatedUser,
         });
       } catch (err) {
         console.log(err);

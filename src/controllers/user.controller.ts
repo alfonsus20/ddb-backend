@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { HttpException } from "../exceptions/HttpException";
 import { UserPayload, UserQuery } from "../interfaces/user.interface";
+import { USER_SHOWN_ATTRIBUTES } from "../utils/constants";
 import { prisma } from "../utils/db";
 
 export const getAllUsersFilteredAndPaginated = async (
@@ -31,24 +32,7 @@ export const getAllUsersFilteredAndPaginated = async (
       orderBy: { name: sortDirection },
       take: rowsPerPage,
       skip: (page - 1) * rowsPerPage,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        password: false,
-        thesisTitle: true,
-        thesisURL: true,
-        entryYear: true,
-        graduationYear: true,
-        majority: true,
-        blurHash: true,
-        profileImageURL: true,
-        isAdmin: true,
-        isVerified: true,
-        isGraduated: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: USER_SHOWN_ATTRIBUTES,
     });
 
     const totalUsers = await prisma.user.count();
@@ -83,24 +67,7 @@ export const getAllUsers = async (
   try {
     const users = await prisma.user.findMany({
       where: filters,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        password: false,
-        thesisTitle: true,
-        thesisURL: true,
-        entryYear: true,
-        graduationYear: true,
-        majority: true,
-        blurHash: true,
-        profileImageURL: true,
-        isAdmin: true,
-        isVerified: true,
-        isGraduated: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: USER_SHOWN_ATTRIBUTES,
     });
 
     res.json({
@@ -149,12 +116,13 @@ export const makeUserAdmin = async (
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: +req.params.id },
       data: { isAdmin: true },
+      select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: "User berhasil dijadikan admin", data: null });
+    res.json({ message: "User berhasil dijadikan admin", data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -174,12 +142,13 @@ export const makeUserVerified = async (
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: +req.params.id },
       data: { isVerified: true },
+      select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: "User berhasil diverifikasi", data: null });
+    res.json({ message: "User berhasil diverifikasi", data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -207,9 +176,13 @@ export const editUser = async (
       throw new HttpException(404, "User tidak ditemukan");
     }
 
-    await prisma.user.update({ where: { id: +req.params.id }, data: payload });
+    const updatedUser = await prisma.user.update({
+      where: { id: +req.params.id },
+      data: payload,
+      select: USER_SHOWN_ATTRIBUTES,
+    });
 
-    res.json({ message: "User berhasil diupdate", data: foundUser });
+    res.json({ message: "User berhasil diupdate", data: updatedUser });
   } catch (err) {
     next(err);
   }

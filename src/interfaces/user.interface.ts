@@ -10,6 +10,7 @@ export interface UserPayload {
   profileImageURL?: string;
   isAdmin?: boolean;
   isVerified?: boolean;
+  isGraduated?: boolean;
 }
 
 export interface UserQuery extends CommonQuery {
