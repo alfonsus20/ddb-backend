@@ -1,5 +1,5 @@
 import express from "express";
-import { PORT } from "./config";
+import { PORT } from "./config/config";
 import cors from "cors";
 import authRoute from "./routes/auth.route";
 import articleRoute from "./routes/article.route";

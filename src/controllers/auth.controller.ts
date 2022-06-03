@@ -4,7 +4,7 @@ import { HttpException } from "../exceptions/HttpException";
 import { LoginRequest, RegisterRequest } from "../interfaces/auth.interface";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET } from "../config/config";
 import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from "../utils/constants";
 import fileUpload from "express-fileupload";
 import storage from "../config/storage";

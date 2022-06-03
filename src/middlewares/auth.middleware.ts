@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpException } from "../exceptions/HttpException";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET } from "../config/config";
 import { TokenPayload } from "../interfaces/token.interface";
 import { prisma } from "../utils/db";
 
