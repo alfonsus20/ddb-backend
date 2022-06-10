@@ -93,11 +93,11 @@ export const getUserById = async (
     });
 
     if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
+      throw new HttpException(404, ResponseCodes.NOT_FOUND);
     }
 
     res.json({
-      message: 'User berhasil didapatkan berdasarkan id',
+      message: ResponseCodes.SUCCESS,
       data: foundUser,
     });
   } catch (err) {
