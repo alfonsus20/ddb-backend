@@ -26,7 +26,7 @@ export const getAllUsersFilteredAndPaginated = async (
   };
 
   if (isGraduated !== undefined) {
-    filters.isGraduated = isGraduated;
+    filters.isGraduated = Boolean(isGraduated);
   }
 
   try {
@@ -60,11 +60,11 @@ export const getAllUsers = async (
   const filters: { [key: string]: any } = {};
 
   if (isGraduated !== undefined) {
-    filters.isGraduated = isGraduated;
+    filters.isGraduated = Boolean(isGraduated);
   }
 
   if (isVerified !== undefined) {
-    filters.isVerified = isVerified;
+    filters.isVerified = Boolean(isVerified);
   }
 
   try {
