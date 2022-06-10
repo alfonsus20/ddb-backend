@@ -17,11 +17,8 @@ import {
 const route = Router();
 
 route.get('/', getAllArticleFilteredAndPaginated);
-
 route.get('/findAll', getAllArticle);
-
 route.get('/:id', getArticleById);
-
 route.post(
   '/',
   authMiddleware,
@@ -33,7 +30,6 @@ route.post(
   ],
   createArticle,
 );
-
 route.post(
   '/',
   authMiddleware,
@@ -45,7 +41,6 @@ route.post(
   ],
   createArticle,
 );
-
 route.put(
   '/:id',
   authMiddleware,
@@ -57,9 +52,7 @@ route.put(
   ],
   updateArticle,
 );
-
 route.post('/imageUpload', authMiddleware, adminMiddleware, uploadArticleImage);
-
 route.delete('/:id', authMiddleware, adminMiddleware, deleteArticle);
 
 export default route;

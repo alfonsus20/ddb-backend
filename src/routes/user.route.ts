@@ -28,9 +28,9 @@ route.put(
   [
     body('name').notEmpty().isString(),
     body('majority').notEmpty().isString(),
-    body('entryYear').notEmpty().isNumeric(),
+    body('entryYear').notEmpty().isInt(),
     body('isGraduated').default(false),
-    body('graduationYear').optional().isNumeric(),
+    body('graduationYear').optional().isInt(),
     body('thesisURL').optional().isURL(),
     body('thesisTitle').optional(),
   ],

@@ -6,11 +6,13 @@ import fileUpload from 'express-fileupload';
 import { Prisma } from '@prisma/client';
 import HttpException from '../exceptions/HttpException';
 import { LoginRequest, RegisterRequest } from '../interfaces/auth.interface';
-import { JWT_SECRET, storage } from '../config';
+import storage from '../config/storage';
 import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from '../utils/constants';
 
 import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
+import { ResponseCodes } from '../utils/enums';
+import { JWT_SECRET } from '../config/env';
 
 export const register = async (
   req: Request,
@@ -21,7 +23,7 @@ export const register = async (
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new HttpException(400, 'Konten tidak valid', errors.array());
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
     const {
@@ -41,7 +43,7 @@ export const register = async (
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: 'User berhasil terdaftar', data: newUser });
+    res.json({ message: ResponseCodes.SUCCESS, data: newUser });
   } catch (err) {
     next(errorHandler(err));
   }
@@ -63,7 +65,7 @@ export const login = async (
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (!existingUser) {
-      throw new HttpException(404, 'Email tidak ditemukan');
+      throw new HttpException(404, ResponseCodes.NOT_FOUND);
     }
 
     const isPasswordMatch = await bcryptjs.compare(
@@ -71,14 +73,14 @@ export const login = async (
       existingUser.password,
     );
     if (!isPasswordMatch) {
-      throw new HttpException(401, 'Password salah');
+      throw new HttpException(401, ResponseCodes.BAD_REQUEST);
     }
 
     const token = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
       expiresIn: '24h',
     });
 
-    res.json({ message: 'Login berhasil', data: { token } });
+    res.json({ message: ResponseCodes.SUCCESS, data: { token } });
   } catch (err) {
     next(err);
   }
@@ -96,7 +98,7 @@ export const getAuthenticatedUser = async (
     });
 
     res.json({
-      message: 'Profil berhasil didapatkan berdasarkan id',
+      message: ResponseCodes.SUCCESS,
       data: foundUser,
     });
   } catch (err) {
@@ -113,7 +115,7 @@ export const updateProfile = async (
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new HttpException(400, 'Body tidak valid', errors.array());
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
     const payload = req.body as Prisma.UserUpdateInput;
@@ -131,7 +133,7 @@ export const updateProfile = async (
       },
       select: USER_SHOWN_ATTRIBUTES,
     });
-    res.json({ message: 'User berhasil diupdate', data: updatedUser });
+    res.json({ message: ResponseCodes.SUCCESS, data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -146,7 +148,7 @@ export const updateProfileImage = async (
 
   try {
     if (!files) {
-      throw new HttpException(400, 'Tidak ada gambar');
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST);
     } else {
       try {
         const { image } = files as { image: fileUpload.UploadedFile };
@@ -172,11 +174,11 @@ export const updateProfileImage = async (
         });
 
         res.json({
-          message: 'Gambar profil berhasil diperbarui',
+          message: ResponseCodes.SUCCESS,
           data: updatedUser,
         });
       } catch (err) {
-        throw new HttpException(500, 'Failed to upload');
+        throw new HttpException(500, ResponseCodes.SERVER_ERROR);
       }
     }
   } catch (err) {

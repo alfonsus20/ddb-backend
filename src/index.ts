@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
-import { PORT } from './config';
+import { PORT } from './config/env';
 import authRoute from './routes/auth.route';
 import articleRoute from './routes/article.route';
 import userRoute from './routes/user.route';

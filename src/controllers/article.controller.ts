@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
 import { validationResult } from 'express-validator';
-import { storage } from '../config';
+import storage from '../config/storage';
 import HttpException from '../exceptions/HttpException';
 import { CommonQuery } from '../interfaces/common.interface';
 import { IMAGE_URL_PREFIX } from '../utils/constants';

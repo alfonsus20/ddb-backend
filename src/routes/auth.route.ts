@@ -22,7 +22,6 @@ route.post(
   ],
   register,
 );
-
 route.post(
   '/login',
   [
@@ -33,7 +32,15 @@ route.post(
 );
 
 route.get('/profile', authMiddleware, getAuthenticatedUser);
-route.put('/profile', authMiddleware, updateProfile);
+route.put('/profile', authMiddleware, [
+  body('name').notEmpty().isString(),
+  body('majority').notEmpty().isString(),
+  body('entryYear').notEmpty().isInt(),
+  body('graduationYear').optional().isInt(),
+  body('thesisTitle').optional().isString(),
+  body('thesisURL').optional().isURL(),
+  body('isGraduated').optional().isBoolean(),
+], updateProfile);
 route.put('/profile/profileImage', authMiddleware, updateProfileImage);
 
 export default route;
