@@ -19,9 +19,7 @@ export const getAllArticleFilteredAndPaginated = async (
 
   try {
     const articles = await prisma.article.findMany({
-      include: {
-        user: true,
-      },
+      include: { user: { select: { name: true } } },
       take: rowsPerPage,
       skip: (page - 1) * rowsPerPage,
       orderBy: { createdAt: sortDirection },
@@ -46,7 +44,7 @@ export const getAllArticle = async (
 ) => {
   try {
     const articles = await prisma.article.findMany({
-      include: { user: true },
+      include: { user: { select: { name: true } } },
     });
 
     res.json({
