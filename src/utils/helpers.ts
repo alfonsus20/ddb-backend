@@ -1,8 +1,10 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import axios from 'axios';
 import { encode } from 'blurhash';
 import sharp from 'sharp';
+import HttpException from '../exceptions/HttpException';
+import { ResponseCodes } from './enums';
 
-// eslint-disable-next-line import/prefer-default-export
 export const encodeImageToBlurhash = async (
   imageURL: string,
 ): Promise<string> => {
@@ -23,4 +25,18 @@ export const encodeImageToBlurhash = async (
         resolve(encode(new Uint8ClampedArray(buffer), width, height, 4, 4));
       });
   });
+};
+
+export const errorHandler = (err : unknown) : unknown | PrismaClientKnownRequestError => {
+  if (err instanceof PrismaClientKnownRequestError) {
+    switch (err.code) {
+      case 'P2025':
+        return new HttpException(400, ResponseCodes.NOT_FOUND);
+      case 'P2002':
+        return new HttpException(404, ResponseCodes.BAD_REQUEST);
+      default:
+        return new HttpException(404, ResponseCodes.SERVER_ERROR);
+    }
+  }
+  return err;
 };

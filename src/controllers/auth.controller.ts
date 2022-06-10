@@ -9,7 +9,7 @@ import { LoginRequest, RegisterRequest } from '../interfaces/auth.interface';
 import { JWT_SECRET, storage } from '../config';
 import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from '../utils/constants';
 
-import { encodeImageToBlurhash } from '../utils/helpers';
+import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
 
 export const register = async (
@@ -28,11 +28,6 @@ export const register = async (
       email, password, name, majority, entryYear,
     } = req.body as RegisterRequest;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      throw new HttpException(400, 'Email telah digunakan');
-    }
-
     const hashedPassword = await bcryptjs.hash(password, 12);
 
     const newUser = await prisma.user.create({
@@ -41,14 +36,14 @@ export const register = async (
         email,
         password: hashedPassword,
         majority,
-        entryYear,
+        entryYear: +entryYear,
       },
       select: USER_SHOWN_ATTRIBUTES,
     });
 
     res.json({ message: 'User berhasil terdaftar', data: newUser });
   } catch (err) {
-    next(err);
+    next(errorHandler(err));
   }
 };
 
@@ -97,11 +92,8 @@ export const getAuthenticatedUser = async (
   try {
     const foundUser = await prisma.user.findUnique({
       where: { id: req.user.id },
+      select: USER_SHOWN_ATTRIBUTES,
     });
-
-    if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
-    }
 
     res.json({
       message: 'Profil berhasil didapatkan berdasarkan id',
@@ -126,32 +118,20 @@ export const updateProfile = async (
 
     const payload = req.body as Prisma.UserUpdateInput;
 
-    const foundUser = await prisma.user.findUnique({
+    const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
+      data: {
+        name: payload.name,
+        entryYear: payload.entryYear,
+        majority: payload.majority,
+        isGraduated: payload.isGraduated,
+        thesisTitle: payload.thesisTitle,
+        thesisURL: payload.thesisURL,
+        graduationYear: payload.graduationYear,
+      },
+      select: USER_SHOWN_ATTRIBUTES,
     });
-
-    if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
-    }
-
-    if (foundUser.id === req.user.id) {
-      const updatedUser = await prisma.user.update({
-        where: { id: req.user.id },
-        data: {
-          name: payload.name,
-          entryYear: payload.entryYear,
-          majority: payload.majority,
-          isGraduated: payload.isGraduated,
-          thesisTitle: payload.thesisTitle,
-          thesisURL: payload.thesisURL,
-          graduationYear: payload.graduationYear,
-        },
-        select: USER_SHOWN_ATTRIBUTES,
-      });
-      res.json({ message: 'User berhasil diupdate', data: updatedUser });
-    } else {
-      throw new HttpException(403, 'Forbidden');
-    }
+    res.json({ message: 'User berhasil diupdate', data: updatedUser });
   } catch (err) {
     next(err);
   }
@@ -179,14 +159,6 @@ export const updateProfileImage = async (
           contentType: image.mimetype,
         });
 
-        const foundUser = await prisma.user.findUnique({
-          where: { id: req.user.id },
-        });
-
-        if (!foundUser) {
-          throw new HttpException(404, 'User tidak ditemukan');
-        }
-
         const profileImageURL = `${IMAGE_URL_PREFIX}/${filePath}`;
 
         const blurHash = (await encodeImageToBlurhash(
@@ -204,7 +176,6 @@ export const updateProfileImage = async (
           data: updatedUser,
         });
       } catch (err) {
-        console.log(err);
         throw new HttpException(500, 'Failed to upload');
       }
     }

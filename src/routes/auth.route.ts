@@ -18,7 +18,7 @@ route.post(
       .withMessage('Panjang password minimal 8 karakter'),
     body('name').notEmpty().isString(),
     body('majority').notEmpty().isString(),
-    body('entryYear').notEmpty().isNumeric(),
+    body('entryYear').notEmpty().isInt(),
   ],
   register,
 );

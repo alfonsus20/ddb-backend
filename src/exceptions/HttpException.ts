@@ -5,12 +5,12 @@ export default class HttpException extends Error {
 
   public message: string;
 
-  public data: ValidationError[];
+  public data: ValidationError[] | string | null;
 
   constructor(status: number, message: string, data?: ValidationError[]) {
     super(message);
     this.status = status;
     this.message = message;
-    this.data = data || [];
+    this.data = data || null;
   }
 }

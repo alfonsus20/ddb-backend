@@ -4,6 +4,8 @@ import { validationResult } from 'express-validator';
 import HttpException from '../exceptions/HttpException';
 import { UserQuery } from '../interfaces/user.interface';
 import { USER_SHOWN_ATTRIBUTES } from '../utils/constants';
+import { ResponseCodes } from '../utils/enums';
+import { errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
 
 export const getAllUsersFilteredAndPaginated = async (
@@ -39,7 +41,7 @@ export const getAllUsersFilteredAndPaginated = async (
     const totalUsers = await prisma.user.count();
 
     res.json({
-      message: 'Semua user berhasil didapatkan (paginated)',
+      message: ResponseCodes.SUCCESS,
       data: users,
       totalData: totalUsers,
     });
@@ -72,7 +74,7 @@ export const getAllUsers = async (
     });
 
     res.json({
-      message: 'Semua user berhasil didapatkan',
+      message: ResponseCodes.SUCCESS,
       data: users,
     });
   } catch (err) {
@@ -109,23 +111,15 @@ export const makeUserAdmin = async (
   next: NextFunction,
 ) => {
   try {
-    const foundUser = await prisma.user.findFirst({
-      where: { id: +req.params.id },
-    });
-
-    if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
-    }
-
     const updatedUser = await prisma.user.update({
       where: { id: +req.params.id },
       data: { isAdmin: true },
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: 'User berhasil dijadikan admin', data: updatedUser });
+    res.json({ message: ResponseCodes.SUCCESS, data: updatedUser });
   } catch (err) {
-    next(err);
+    next(errorHandler(err));
   }
 };
 
@@ -135,23 +129,15 @@ export const makeUserVerified = async (
   next: NextFunction,
 ) => {
   try {
-    const foundUser = await prisma.user.findFirst({
-      where: { id: +req.params.id },
-    });
-
-    if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
-    }
-
     const updatedUser = await prisma.user.update({
       where: { id: +req.params.id },
       data: { isVerified: true },
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: 'User berhasil diverifikasi', data: updatedUser });
+    res.json({ message: ResponseCodes.SUCCESS, data: updatedUser });
   } catch (err) {
-    next(err);
+    next(errorHandler(err));
   }
 };
 
@@ -164,18 +150,10 @@ export const editUser = async (
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new HttpException(400, 'Body tidak valid', errors.array());
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
     const payload = req.body as Prisma.UserUpdateInput;
-
-    const foundUser = await prisma.user.findFirst({
-      where: { id: +req.params.id },
-    });
-
-    if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
-    }
 
     const updatedUser = await prisma.user.update({
       where: { id: +req.params.id },
@@ -183,9 +161,9 @@ export const editUser = async (
       select: USER_SHOWN_ATTRIBUTES,
     });
 
-    res.json({ message: 'User berhasil diupdate', data: updatedUser });
+    res.json({ message: ResponseCodes.SUCCESS, data: updatedUser });
   } catch (err) {
-    next(err);
+    next(errorHandler(err));
   }
 };
 
@@ -195,18 +173,10 @@ export const deleteUser = async (
   next: NextFunction,
 ) => {
   try {
-    const foundUser = await prisma.user.findFirst({
-      where: { id: +req.params.id },
-    });
-
-    if (!foundUser) {
-      throw new HttpException(404, 'User tidak ditemukan');
-    }
-
     await prisma.user.delete({ where: { id: +req.params.id } });
 
-    res.json({ message: 'User berhasil dihapus', data: null });
+    res.json({ message: ResponseCodes.SUCCESS, data: null });
   } catch (err) {
-    next(err);
+    next(errorHandler(err));
   }
 };

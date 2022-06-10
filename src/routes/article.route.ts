@@ -29,7 +29,7 @@ route.post(
   [
     body('title').notEmpty().isString(),
     body('content').notEmpty().isString(),
-    body('imageURL').notEmpty().isString(),
+    body('imageURL').notEmpty().isURL(),
   ],
   createArticle,
 );

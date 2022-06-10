@@ -7,7 +7,8 @@ import HttpException from '../exceptions/HttpException';
 import { CommonQuery } from '../interfaces/common.interface';
 import { IMAGE_URL_PREFIX } from '../utils/constants';
 import prisma from '../utils/prisma';
-import { encodeImageToBlurhash } from '../utils/helpers';
+import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
+import { ResponseCodes } from '../utils/enums';
 
 export const getAllArticleFilteredAndPaginated = async (
   req: Request<{}, {}, {}, CommonQuery>,
@@ -29,7 +30,7 @@ export const getAllArticleFilteredAndPaginated = async (
     const total = await prisma.article.count();
 
     res.json({
-      message: 'Semua artikel berhasil didapatkan',
+      message: ResponseCodes.SUCCESS,
       data: articles,
       totalData: total,
     });
@@ -49,7 +50,7 @@ export const getAllArticle = async (
     });
 
     res.json({
-      message: 'Semua artikel berhasil didapatkan',
+      message: ResponseCodes.SUCCESS,
       data: articles,
     });
   } catch (err) {
@@ -68,11 +69,11 @@ export const getArticleById = async (
     });
 
     if (!foundArticle) {
-      throw new HttpException(404, 'Artikel tidak ditemukan');
+      throw new HttpException(404, ResponseCodes.NOT_FOUND);
     }
 
     res.json({
-      message: 'Artikel berhasil didapatkan berdasarkan id',
+      message: ResponseCodes.SUCCESS,
       data: foundArticle,
     });
   } catch (err) {
@@ -89,7 +90,7 @@ export const createArticle = async (
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new HttpException(400, 'Body tidak valid', errors.array());
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
     const payload = req.body as Prisma.ArticleUncheckedCreateInput;
@@ -104,7 +105,7 @@ export const createArticle = async (
       },
     });
 
-    res.json({ message: 'Artikel berhasil dibuat', data: newArticle });
+    res.json({ message: ResponseCodes.SUCCESS, data: newArticle });
   } catch (err) {
     next(err);
   }
@@ -119,29 +120,21 @@ export const updateArticle = async (
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new HttpException(400, 'Body tidak valid', errors.array());
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
     const payload = req.body as Prisma.ArticleUpdateInput;
-    const foundArticle = await prisma.article.findUnique({
-      where: { id: +req.params.id },
-    });
-
-    if (!foundArticle) {
-      throw new HttpException(404, 'Artikel tidak ditemukan');
-    }
-
     payload.blurHash = (await encodeImageToBlurhash(
       payload.imageURL as string,
     )) as string;
 
-    await prisma.article.update({
+    const updatedArticle = await prisma.article.update({
       data: payload,
       where: { id: +req.params.id },
     });
-    res.json({ message: 'Artikel berhasil diupdate', data: foundArticle });
+    res.json({ message: ResponseCodes.SUCCESS, data: updatedArticle });
   } catch (err) {
-    next(err);
+    next(errorHandler(err));
   }
 };
 
@@ -151,18 +144,11 @@ export const deleteArticle = async (
   next: NextFunction,
 ) => {
   try {
-    const foundArticle = await prisma.article.findUnique({
-      where: { id: +req.params.id },
-    });
-
-    if (!foundArticle) {
-      throw new HttpException(404, 'Artikel tidak ditemukan');
-    }
-
     await prisma.article.delete({ where: { id: +req.params.id } });
-    res.json({ message: 'Artikel berhasil dihapus', data: null });
+    res.json({ message: ResponseCodes.SUCCESS, data: null });
   } catch (err) {
-    next(err);
+    console.log('ERROR => ', err);
+    next(errorHandler(err));
   }
 };
 
@@ -175,7 +161,7 @@ export const uploadArticleImage = async (
 
   try {
     if (!files) {
-      throw new HttpException(400, 'Tidak ada gambar');
+      throw new HttpException(400, ResponseCodes.BAD_REQUEST);
     } else {
       try {
         const { image } = files as { image: fileUpload.UploadedFile };
@@ -189,11 +175,11 @@ export const uploadArticleImage = async (
         });
 
         res.json({
-          message: 'File berhasil diupload',
+          message: ResponseCodes.SUCCESS,
           data: `${IMAGE_URL_PREFIX}/${filePath}`,
         });
       } catch (err) {
-        throw new HttpException(500, 'Failed to upload');
+        throw new HttpException(500, ResponseCodes.SERVER_ERROR);
       }
     }
   } catch (err) {

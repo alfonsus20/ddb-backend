@@ -4,6 +4,7 @@ import HttpException from '../exceptions/HttpException';
 import { JWT_SECRET } from '../config';
 import { TokenPayload } from '../interfaces/token.interface';
 import prisma from '../utils/prisma';
+import { ResponseCodes } from '../utils/enums';
 
 export const authMiddleware = async (
   req: Request,
@@ -16,13 +17,13 @@ export const authMiddleware = async (
     let token = '';
 
     if (!authHeader) {
-      throw new HttpException(401, 'Not authenticated');
+      throw new HttpException(401, ResponseCodes.UNAUTHENTICATED);
     } else {
-      [token] = authHeader.split(' ');
+      [,token] = authHeader.split(' ');
     }
 
     if (!token) {
-      throw new HttpException(401, 'Token not found');
+      throw new HttpException(401, ResponseCodes.BAD_REQUEST);
     }
 
     try {
@@ -33,10 +34,10 @@ export const authMiddleware = async (
         req.user = user;
         next();
       } else {
-        throw new HttpException(404, 'User not found');
+        next(new HttpException(404, ResponseCodes.NOT_FOUND));
       }
     } catch (err) {
-      throw new HttpException(401, 'Token invalid');
+      throw new HttpException(401, ResponseCodes.BAD_REQUEST);
     }
   } catch (err) {
     next(err);
@@ -51,6 +52,6 @@ export const adminMiddleware = async (
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    next(new HttpException(403, 'Not authorized as admin'));
+    next(new HttpException(403, ResponseCodes.UNAUTHORIZED));
   }
 };
