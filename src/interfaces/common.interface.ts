@@ -1,5 +1,5 @@
 export interface CommonQuery {
-  page?: number;
-  rowsPerPage?: number;
+  page?: string;
+  rowsPerPage?: string;
   sortDirection?: 'desc' | 'asc';
 }

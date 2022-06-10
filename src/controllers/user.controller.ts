@@ -33,8 +33,8 @@ export const getAllUsersFilteredAndPaginated = async (
     const users = await prisma.user.findMany({
       where: filters,
       orderBy: { name: sortDirection },
-      take: rowsPerPage,
-      skip: (page - 1) * rowsPerPage,
+      take: +rowsPerPage,
+      skip: (+page - 1) * +rowsPerPage,
       select: USER_SHOWN_ATTRIBUTES,
     });
 

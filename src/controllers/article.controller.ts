@@ -15,13 +15,13 @@ export const getAllArticleFilteredAndPaginated = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { page = 1, rowsPerPage = 10, sortDirection = 'desc' } = req.query;
+  const { page = '1', rowsPerPage = '10', sortDirection = 'desc' } = req.query;
 
   try {
     const articles = await prisma.article.findMany({
       include: { user: { select: { name: true } } },
-      take: rowsPerPage,
-      skip: (page - 1) * rowsPerPage,
+      take: +rowsPerPage,
+      skip: (+page - 1) * +rowsPerPage,
       orderBy: { createdAt: sortDirection },
     });
 
