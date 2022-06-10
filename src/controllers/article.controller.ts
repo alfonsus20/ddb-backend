@@ -64,6 +64,7 @@ export const getArticleById = async (
   try {
     const foundArticle = await prisma.article.findUnique({
       where: { id: +req.params.id },
+      include: { user: { select: { name: true } } },
     });
 
     if (!foundArticle) {
