@@ -90,6 +90,7 @@ export const getUserById = async (
   try {
     const foundUser = await prisma.user.findFirst({
       where: { id: +req.params.id },
+      select: USER_SHOWN_ATTRIBUTES,
     });
 
     if (!foundUser) {
