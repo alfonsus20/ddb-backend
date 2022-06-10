@@ -22,7 +22,7 @@ export const getAllUsersFilteredAndPaginated = async (
   } = req.query;
 
   const filters: { [key: string]: any } = {
-    name: { contains: name },
+    name: { contains: name, mode: 'insensitive' },
   };
 
   if (isGraduated !== undefined) {
