@@ -30,9 +30,9 @@ route.put(
     body('majority').notEmpty().isString(),
     body('entryYear').notEmpty().isInt(),
     body('isGraduated').default(false),
-    body('graduationYear').optional().isInt(),
-    body('thesisURL').optional().isURL(),
-    body('thesisTitle').optional(),
+    body('graduationYear').optional({ nullable: true }).isInt(),
+    body('thesisURL').optional({ nullable: true }).isURL(),
+    body('thesisTitle').optional({ nullable: true }),
   ],
   editUser,
 );

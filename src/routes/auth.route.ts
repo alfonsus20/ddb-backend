@@ -36,9 +36,9 @@ route.put('/profile', authMiddleware, [
   body('name').notEmpty().isString(),
   body('majority').notEmpty().isString(),
   body('entryYear').notEmpty().isInt(),
-  body('graduationYear').optional().isInt(),
-  body('thesisTitle').optional().isString(),
-  body('thesisURL').optional().isURL(),
+  body('graduationYear').optional({ nullable: true }).isInt(),
+  body('thesisTitle').optional({ nullable: true }).isString(),
+  body('thesisURL').optional({ nullable: true }).isURL(),
   body('isGraduated').optional().isBoolean(),
 ], updateProfile);
 route.put('/profile/profileImage', authMiddleware, updateProfileImage);
