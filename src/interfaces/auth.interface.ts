@@ -10,9 +10,9 @@ export interface RegisterDto extends LoginDto {
 }
 
 export interface UpdateUserDto {
-  name : string;
-  majority : string;
-  entryYear: number;
+  name?: string;
+  majority?: string;
+  entryYear?: number;
   graduationYear?: number;
   thesisURL?: string;
   thesisTitle?: string;

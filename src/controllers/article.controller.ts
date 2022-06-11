@@ -1,15 +1,20 @@
-import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
 import { validationResult } from 'express-validator';
 import storage from '../config/storage';
 import HttpException from '../exceptions/HttpException';
+import { CreateArticleDto, UpdateArticleDto } from '../interfaces/article.interface';
 import { CommonQuery } from '../interfaces/common.interface';
 import { IMAGE_URL_PREFIX } from '../utils/constants';
 import { ResponseCodes } from '../utils/enums';
 import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
 
+/**
+ *  @desc    Get All Articles with Filter, Sorting, and Pagination Capability
+ *  @route   GET /articles
+ *  @access  Public
+*/
 export const getAllArticleFilteredAndPaginated = async (
   req: Request<{}, {}, {}, CommonQuery>,
   res: Response,
@@ -37,6 +42,11 @@ export const getAllArticleFilteredAndPaginated = async (
   }
 };
 
+/**
+ *  @desc    Get All Articles
+ *  @route   GET /articles/findAll
+ *  @access  Public
+*/
 export const getAllArticle = async (
   _: Request,
   res: Response,
@@ -56,6 +66,11 @@ export const getAllArticle = async (
   }
 };
 
+/**
+ *  @desc    Get Single Article by Id
+ *  @route   GET /articles/:id
+ *  @access  Public
+*/
 export const getArticleById = async (
   req: Request,
   res: Response,
@@ -80,6 +95,11 @@ export const getArticleById = async (
   }
 };
 
+/**
+ *  @desc    Create an Article
+ *  @route   POST /articles
+ *  @access  Private/Admin
+*/
 export const createArticle = async (
   req: Request,
   res: Response,
@@ -92,7 +112,7 @@ export const createArticle = async (
       throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
-    const payload = req.body as Prisma.ArticleUncheckedCreateInput;
+    const payload = req.body as CreateArticleDto;
     payload.blurHash = (await encodeImageToBlurhash(
       payload.imageURL,
     )) as string;
@@ -110,6 +130,11 @@ export const createArticle = async (
   }
 };
 
+/**
+ *  @desc    Update an Article
+ *  @route   PUT /articles/:id
+ *  @access  Private/Admin
+*/
 export const updateArticle = async (
   req: Request,
   res: Response,
@@ -122,7 +147,7 @@ export const updateArticle = async (
       throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
-    const payload = req.body as Prisma.ArticleUpdateInput;
+    const payload = req.body as UpdateArticleDto;
     payload.blurHash = (await encodeImageToBlurhash(
       payload.imageURL as string,
     )) as string;
@@ -137,6 +162,11 @@ export const updateArticle = async (
   }
 };
 
+/**
+ *  @desc    Delete an Article
+ *  @route   DELETE /articles/:id
+ *  @access  Private/Admin
+*/
 export const deleteArticle = async (
   req: Request,
   res: Response,
@@ -151,6 +181,11 @@ export const deleteArticle = async (
   }
 };
 
+/**
+ *  @desc    Upload Image for an Article
+ *  @route   POST /articles/imageUpload
+ *  @access  Private/Admin
+*/
 export const uploadArticleImage = async (
   req: Request,
   res: Response,

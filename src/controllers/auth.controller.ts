@@ -13,6 +13,11 @@ import { ResponseCodes } from '../utils/enums';
 import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
 
+/**
+ *  @desc    Register
+ *  @route   POST /register
+ *  @access  Public
+*/
 export const register = async (
   req: Request,
   res: Response,
@@ -48,6 +53,11 @@ export const register = async (
   }
 };
 
+/**
+ *  @desc    Login
+ *  @route   POST /login
+ *  @access  Public
+*/
 export const login = async (
   req: Request,
   res: Response,
@@ -85,6 +95,11 @@ export const login = async (
   }
 };
 
+/**
+ *  @desc    Get Profile
+ *  @route   GET /profile
+ *  @access  Private
+*/
 export const getAuthenticatedUser = async (
   req: Request,
   res: Response,
@@ -105,6 +120,11 @@ export const getAuthenticatedUser = async (
   }
 };
 
+/**
+ *  @desc    Update Profile
+ *  @route   PUT /profile
+ *  @access  Private
+*/
 export const updateProfile = async (
   req: Request,
   res: Response,
@@ -138,6 +158,11 @@ export const updateProfile = async (
   }
 };
 
+/**
+ *  @desc    Update Profile Image
+ *  @route   PUT /profile/profileImage
+ *  @access  Public
+*/
 export const updateProfileImage = async (
   req: Request,
   res: Response,

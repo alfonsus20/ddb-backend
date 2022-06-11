@@ -8,6 +8,11 @@ import { ResponseCodes } from '../utils/enums';
 import { errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
 
+/**
+ *  @desc    Get All Users with Filter, Sorting, and Pagination Capability
+ *  @route   GET /users
+ *  @access  Public
+*/
 export const getAllUsersFilteredAndPaginated = async (
   req: Request<{}, {}, {}, UserQuery>,
   res: Response,
@@ -50,6 +55,11 @@ export const getAllUsersFilteredAndPaginated = async (
   }
 };
 
+/**
+ *  @desc    Get All Users
+ *  @route   GET /users
+ *  @access  Public
+*/
 export const getAllUsers = async (
   req: Request<{}, {}, {}, UserQuery>,
   res: Response,
@@ -82,6 +92,11 @@ export const getAllUsers = async (
   }
 };
 
+/**
+ *  @desc    Get Single User by Id
+ *  @route   GET /users/:id
+ *  @access  Public
+*/
 export const getUserById = async (
   req: Request,
   res: Response,
@@ -106,6 +121,11 @@ export const getUserById = async (
   }
 };
 
+/**
+ *  @desc    Promote an User to be an Admin
+ *  @route   GET /users/:id/makeAdmin
+ *  @access  Private/Admin
+*/
 export const makeUserAdmin = async (
   req: Request,
   res: Response,
@@ -124,6 +144,11 @@ export const makeUserAdmin = async (
   }
 };
 
+/**
+ *  @desc    Verify an User
+ *  @route   GET /users/:id/verify
+ *  @access  Private/Admin
+*/
 export const makeUserVerified = async (
   req: Request,
   res: Response,
@@ -142,6 +167,11 @@ export const makeUserVerified = async (
   }
 };
 
+/**
+ *  @desc    Edit an User
+ *  @route   PUT /users/:id
+ *  @access  Private/Admin
+*/
 export const editUser = async (
   req: Request,
   res: Response,
@@ -168,6 +198,11 @@ export const editUser = async (
   }
 };
 
+/**
+ *  @desc    Delete an User
+ *  @route   DELETE /users/:id
+ *  @access  Private/Admin
+*/
 export const deleteUser = async (
   req: Request,
   res: Response,
