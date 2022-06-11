@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import {
-  getAuthenticatedUser, login, register, updateProfile, updateProfileImage,
+  getAuthenticatedUser, login, register, updateProfile, updateProfileImage
 } from '../controllers/auth.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 

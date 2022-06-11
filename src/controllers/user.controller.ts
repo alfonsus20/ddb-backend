@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import HttpException from '../exceptions/HttpException';
+import { UpdateUserDto } from '../interfaces/auth.interface';
 import { UserQuery } from '../interfaces/user.interface';
 import { USER_SHOWN_ATTRIBUTES } from '../utils/constants';
 import { ResponseCodes } from '../utils/enums';
@@ -154,7 +154,7 @@ export const editUser = async (
       throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
-    const payload = req.body as Prisma.UserUpdateInput;
+    const payload = req.body as UpdateUserDto;
 
     const updatedUser = await prisma.user.update({
       where: { id: +req.params.id },

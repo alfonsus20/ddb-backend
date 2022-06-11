@@ -7,7 +7,7 @@ export default class HttpException extends Error {
 
   public data: ValidationError[] | string | null;
 
-  constructor(status: number, message: string, data?: ValidationError[]) {
+  constructor(status: number, message: string, data?: ValidationError[] | string | null) {
     super(message);
     this.status = status;
     this.message = message;

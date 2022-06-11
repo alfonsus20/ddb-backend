@@ -1,11 +1,11 @@
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 import fileUpload from 'express-fileupload';
 import { PORT } from './config/env';
-import authRoute from './routes/auth.route';
-import articleRoute from './routes/article.route';
-import userRoute from './routes/user.route';
 import errorMiddleware from './middlewares/error.middleware';
+import articleRoute from './routes/article.route';
+import authRoute from './routes/auth.route';
+import userRoute from './routes/user.route';
 
 const app = express();
 

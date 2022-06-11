@@ -7,11 +7,11 @@ import {
   getAllArticleFilteredAndPaginated,
   getArticleById,
   updateArticle,
-  uploadArticleImage,
+  uploadArticleImage
 } from '../controllers/article.controller';
 import {
   adminMiddleware,
-  authMiddleware,
+  authMiddleware
 } from '../middlewares/auth.middleware';
 
 const route = Router();

@@ -1,18 +1,17 @@
-import { NextFunction, Request, Response } from 'express';
-import { validationResult } from 'express-validator';
 import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
-import { Prisma } from '@prisma/client';
-import HttpException from '../exceptions/HttpException';
-import { LoginRequest, RegisterRequest } from '../interfaces/auth.interface';
+import { validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 import storage from '../config/storage';
+import HttpException from '../exceptions/HttpException';
+import { LoginDto, RegisterDto, UpdateUserDto } from '../interfaces/auth.interface';
 import { IMAGE_URL_PREFIX, USER_SHOWN_ATTRIBUTES } from '../utils/constants';
 
+import { JWT_SECRET } from '../config/env';
+import { ResponseCodes } from '../utils/enums';
 import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
 import prisma from '../utils/prisma';
-import { ResponseCodes } from '../utils/enums';
-import { JWT_SECRET } from '../config/env';
 
 export const register = async (
   req: Request,
@@ -28,7 +27,7 @@ export const register = async (
 
     const {
       email, password, name, majority, entryYear,
-    } = req.body as RegisterRequest;
+    } = req.body as RegisterDto;
 
     const hashedPassword = await bcryptjs.hash(password, 12);
 
@@ -61,7 +60,7 @@ export const login = async (
       throw new HttpException(400, 'Konten tidak valid', errors.array());
     }
 
-    const { email, password } = req.body as LoginRequest;
+    const { email, password } = req.body as LoginDto;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (!existingUser) {
@@ -118,7 +117,7 @@ export const updateProfile = async (
       throw new HttpException(400, ResponseCodes.BAD_REQUEST, errors.array());
     }
 
-    const payload = req.body as Prisma.UserUpdateInput;
+    const payload = req.body as UpdateUserDto;
 
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },

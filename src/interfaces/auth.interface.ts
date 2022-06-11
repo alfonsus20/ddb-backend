@@ -1,15 +1,21 @@
-export interface LoginRequest {
+export interface LoginDto {
   email: string;
   password: string;
 }
 
-export interface RegisterRequest extends LoginRequest {
+export interface RegisterDto extends LoginDto {
   name: string;
   majority: string;
   entryYear: number;
+}
+
+export interface UpdateUserDto {
+  name : string;
+  majority : string;
+  entryYear: number;
   graduationYear?: number;
   thesisURL?: string;
+  thesisTitle?: string;
+  isGraduated ?: boolean;
   profileImageURL?: string;
-  isAdmin?: boolean;
-  isVerified?: boolean;
 }

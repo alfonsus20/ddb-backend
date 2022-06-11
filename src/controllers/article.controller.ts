@@ -6,9 +6,9 @@ import storage from '../config/storage';
 import HttpException from '../exceptions/HttpException';
 import { CommonQuery } from '../interfaces/common.interface';
 import { IMAGE_URL_PREFIX } from '../utils/constants';
-import prisma from '../utils/prisma';
-import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
 import { ResponseCodes } from '../utils/enums';
+import { encodeImageToBlurhash, errorHandler } from '../utils/helpers';
+import prisma from '../utils/prisma';
 
 export const getAllArticleFilteredAndPaginated = async (
   req: Request<{}, {}, {}, CommonQuery>,

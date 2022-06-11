@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import HttpException from '../exceptions/HttpException';
 import { JWT_SECRET } from '../config/env';
+import HttpException from '../exceptions/HttpException';
 import { TokenPayload } from '../interfaces/token.interface';
-import prisma from '../utils/prisma';
 import { ResponseCodes } from '../utils/enums';
+import prisma from '../utils/prisma';
 
 export const authMiddleware = async (
   req: Request,
