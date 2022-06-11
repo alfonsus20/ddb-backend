@@ -3,7 +3,7 @@
 
 Backend repository for Dara Daeng Brawijaya's official website.
 ## API Reference
-[Postman Documentation](https://documenter.getpostman.com/view/12125549/Uz5NhsZT#5701a9ad-1058-4617-ac75-2c4754251526)
+[Postman Documentation](https://documenter.getpostman.com/view/12125549/Uz5NhsZT)
 
 
 ## Run Locally
