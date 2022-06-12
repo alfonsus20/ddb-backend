@@ -176,7 +176,6 @@ export const deleteArticle = async (
     await prisma.article.delete({ where: { id: +req.params.id } });
     res.json({ message: ResponseCodes.SUCCESS, data: null });
   } catch (err) {
-    console.log('ERROR => ', err);
     next(errorHandler(err));
   }
 };

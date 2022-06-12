@@ -174,36 +174,32 @@ export const updateProfileImage = async (
     if (!files) {
       throw new HttpException(400, ResponseCodes.BAD_REQUEST);
     } else {
-      try {
-        const { image } = files as { image: fileUpload.UploadedFile };
+      const { image } = files as { image: fileUpload.UploadedFile };
 
-        const filePath = `users/${image.name}`;
+      const filePath = `users/${image.name}`;
 
-        await storage.from('images').upload(filePath, image.data, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType: image.mimetype,
-        });
+      await storage.from('images').upload(filePath, image.data, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: image.mimetype,
+      });
 
-        const profileImageURL = `${IMAGE_URL_PREFIX}/${filePath}`;
+      const profileImageURL = `${IMAGE_URL_PREFIX}/${filePath}`;
 
-        const blurHash = (await encodeImageToBlurhash(
-          profileImageURL,
-        )) as string;
+      const blurHash = (await encodeImageToBlurhash(
+        profileImageURL,
+      )) as string;
 
-        const updatedUser = await prisma.user.update({
-          where: { id: req.user.id },
-          data: { profileImageURL, blurHash },
-          select: USER_SHOWN_ATTRIBUTES,
-        });
+      const updatedUser = await prisma.user.update({
+        where: { id: req.user.id },
+        data: { profileImageURL, blurHash },
+        select: USER_SHOWN_ATTRIBUTES,
+      });
 
-        res.json({
-          message: ResponseCodes.SUCCESS,
-          data: updatedUser,
-        });
-      } catch (err) {
-        throw new HttpException(500, ResponseCodes.SERVER_ERROR);
-      }
+      res.json({
+        message: ResponseCodes.SUCCESS,
+        data: updatedUser,
+      });
     }
   } catch (err) {
     next(err);
