@@ -14,7 +14,7 @@ app.use(cors());
 app.use(fileUpload());
 
 app.get('/', (_, res) => {
-  res.json({ message: 'DDB Official Backend API' });
+  res.json({ message: 'DDB\'s Official Backend API' });
 });
 
 app.use('/', authRoute);
