@@ -35,7 +35,7 @@ export const errorHandler = (err : unknown) : unknown | PrismaClientKnownRequest
       case 'P2002':
         return new HttpException(404, ResponseCodes.DUPLICATE_DATA);
       default:
-        return new HttpException(404, ResponseCodes.SERVER_ERROR);
+        return new HttpException(500, ResponseCodes.SERVER_ERROR);
     }
   }
   return err;
